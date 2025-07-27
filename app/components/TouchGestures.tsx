@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useRef } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface TouchGesturesProps {
@@ -23,8 +23,8 @@ export default function TouchGestures({
   threshold = 50,
   disabled = false 
 }: TouchGesturesProps) {
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragDirection, setDragDirection] = useState<'left' | 'right' | 'up' | 'down' | null>(null)
+  const [showSwipeIndicator, setShowSwipeIndicator] = useState(false)
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | 'up' | 'down' | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
   const touchEndRef = useRef<{ x: number; y: number; time: number } | null>(null)
@@ -48,14 +48,20 @@ export default function TouchGestures({
     const deltaX = touch.clientX - touchStartRef.current.x
     const deltaY = touch.clientY - touchStartRef.current.y
     
-    // Only show visual feedback if movement is significant
-    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
-      setIsDragging(true)
+    // Only show indicator if movement is significant and fast
+    if (Math.abs(deltaX) > 20 || Math.abs(deltaY) > 20) {
+      const currentTime = Date.now()
+      const deltaTime = currentTime - touchStartRef.current.time
       
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        setDragDirection(deltaX > 0 ? 'right' : 'left')
-      } else {
-        setDragDirection(deltaY > 0 ? 'down' : 'up')
+      // Only show indicator for fast movements
+      if (deltaTime < 200) {
+        setShowSwipeIndicator(true)
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          setSwipeDirection(deltaX > 0 ? 'right' : 'left')
+        } else {
+          setSwipeDirection(deltaY > 0 ? 'down' : 'up')
+        }
       }
     }
   }
@@ -75,8 +81,8 @@ export default function TouchGestures({
     const deltaTime = touchEndRef.current.time - touchStartRef.current.time
     
     // Reset visual state
-    setIsDragging(false)
-    setDragDirection(null)
+    setShowSwipeIndicator(false)
+    setSwipeDirection(null)
     
     // Only trigger swipe if movement is fast enough and exceeds threshold
     if (deltaTime < 300 && (Math.abs(deltaX) > threshold || Math.abs(deltaY) > threshold)) {
@@ -107,46 +113,42 @@ export default function TouchGestures({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative touch-pan-y"
-      style={{ touchAction: 'pan-y' }}
+      className="relative"
+      style={{ 
+        touchAction: 'none',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none'
+      }}
     >
-      {/* Swipe Indicators */}
+      {/* Swipe Indicators - Only show for fast swipes */}
       <AnimatePresence>
-        {isDragging && dragDirection && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+        {showSwipeIndicator && swipeDirection && (
+          <div
             className={`absolute inset-0 flex items-center justify-center pointer-events-none z-10 ${
-              dragDirection === 'left' ? 'justify-start' : 
-              dragDirection === 'right' ? 'justify-end' : 
-              dragDirection === 'up' ? 'items-start' : 'items-end'
+              swipeDirection === 'left' ? 'justify-start' : 
+              swipeDirection === 'right' ? 'justify-end' : 
+              swipeDirection === 'up' ? 'items-start' : 'items-end'
             }`}
           >
             <div className={`p-4 rounded-full bg-cooking-500/20 backdrop-blur-sm ${
-              dragDirection === 'left' ? 'ml-4' : 
-              dragDirection === 'right' ? 'mr-4' : 
-              dragDirection === 'up' ? 'mt-4' : 'mb-4'
+              swipeDirection === 'left' ? 'ml-4' : 
+              swipeDirection === 'right' ? 'mr-4' : 
+              swipeDirection === 'up' ? 'mt-4' : 'mb-4'
             }`}>
-              {dragDirection === 'left' && <ChevronLeft className="w-6 h-6 text-cooking-600" />}
-              {dragDirection === 'right' && <ChevronRight className="w-6 h-6 text-cooking-600" />}
-              {dragDirection === 'up' && <ChevronLeft className="w-6 h-6 text-cooking-600 rotate-90" />}
-              {dragDirection === 'down' && <ChevronRight className="w-6 h-6 text-cooking-600 rotate-90" />}
+              {swipeDirection === 'left' && <ChevronLeft className="w-6 h-6 text-cooking-600" />}
+              {swipeDirection === 'right' && <ChevronRight className="w-6 h-6 text-cooking-600" />}
+              {swipeDirection === 'up' && <ChevronLeft className="w-6 h-6 text-cooking-600 rotate-90" />}
+              {swipeDirection === 'down' && <ChevronRight className="w-6 h-6 text-cooking-600 rotate-90" />}
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
-      {/* Content */}
-      <motion.div
-        animate={{
-          scale: isDragging ? 0.98 : 1,
-          opacity: isDragging ? 0.8 : 1
-        }}
-        transition={{ duration: 0.2 }}
-      >
+      {/* Content - Completely static, no animations */}
+      <div>
         {children}
-      </motion.div>
+      </div>
     </div>
   )
 } 

@@ -198,39 +198,23 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
   }, [])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="card"
-    >
+    <div className="card">
       <div className="text-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex items-center justify-center gap-2 mb-4"
-        >
+        <div className="flex items-center justify-center gap-2 mb-4">
           <Timer className="w-8 h-8 text-cooking-600 dark:text-cooking-400" />
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">Timer</h2>
           {dishName && (
             <span className="text-sm text-gray-500 dark:text-gray-400 ml-2 transition-colors duration-300">({dishName})</span>
           )}
           {isScreenWake && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="ml-2"
-            >
+            <div className="ml-2">
               <Zap className="w-5 h-5 text-yellow-500" />
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Timer Presets */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-center gap-2 mb-4 flex-wrap"
-        >
+        <div className="flex justify-center gap-2 mb-4 flex-wrap">
           <button
             onClick={() => setPresetTime(5)}
             className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
@@ -249,15 +233,11 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
           >
             15min
           </button>
-        </motion.div>
+        </div>
 
         {/* Recommended Time Button */}
         {recommendedMinutes && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4"
-          >
+          <div className="mb-4">
             <button
               onClick={setRecommendedTime}
               className="inline-flex items-center gap-2 px-4 py-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
@@ -265,19 +245,17 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
               <Clock className="w-4 h-4" />
               Set Recommended Time ({recommendedMinutes} min)
             </button>
-          </motion.div>
+          </div>
         )}
 
         {/* Timer Display */}
-        <motion.div
+        <div
           className={`text-8xl font-mono font-bold mb-8 ${
-            isRunning ? 'text-cooking-600 dark:text-cooking-400 animate-pulse-slow' : 'text-gray-700 dark:text-gray-200'
+            isRunning ? 'text-cooking-600 dark:text-cooking-400' : 'text-gray-700 dark:text-gray-200'
           } transition-colors duration-300`}
-          animate={isRunning ? { scale: [1, 1.02, 1] } : {}}
-          transition={{ duration: 2, repeat: Infinity }}
         >
           {formatTime(timeLeft)}
-        </motion.div>
+        </div>
 
         {/* Input Fields */}
         <div className="flex gap-4 justify-center mb-6">
@@ -307,63 +285,45 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
 
         {/* Control Buttons */}
         <div className="flex gap-4 justify-center">
-          <motion.button
+          <button
             onClick={startTimer}
             disabled={isRunning}
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: isRunning ? 1 : 1.05 }}
-            whileTap={{ scale: isRunning ? 1 : 0.95 }}
           >
             <Play className="w-5 h-5 mr-2" />
             Start
-          </motion.button>
+          </button>
 
-          <motion.button
+          <button
             onClick={pauseTimer}
             disabled={!isRunning}
             className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: !isRunning ? 1 : 1.05 }}
-            whileTap={{ scale: !isRunning ? 1 : 0.95 }}
           >
             <Pause className="w-5 h-5 mr-2" />
             Pause
-          </motion.button>
+          </button>
 
-          <motion.button
+          <button
             onClick={resetTimer}
             className="btn-outline"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
           >
             <RotateCcw className="w-5 h-5 mr-2" />
             Reset
-          </motion.button>
+          </button>
         </div>
       </div>
 
       {/* Finish Animation */}
       <AnimatePresence>
         {showFinishAnimation && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+          <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
             onClick={() => setShowFinishAnimation(false)}
           >
-            <motion.div
-              className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-2xl"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-            >
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 0.5 }}
-                className="text-6xl mb-4"
-              >
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-2xl">
+              <div className="text-6xl mb-4">
                 🎉
-              </motion.div>
+              </div>
               <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                 Timer Finished!
               </h3>
@@ -376,10 +336,10 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
               >
                 Got it!
               </button>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   )
 } 
