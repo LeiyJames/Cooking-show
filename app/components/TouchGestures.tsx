@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, PanInfo } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface TouchGesturesProps {
@@ -26,66 +26,87 @@ export default function TouchGestures({
   const [isDragging, setIsDragging] = useState(false)
   const [dragDirection, setDragDirection] = useState<'left' | 'right' | 'up' | 'down' | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null)
+  const touchEndRef = useRef<{ x: number; y: number; time: number } | null>(null)
 
-  const handleDragStart = () => {
-    if (disabled) return
-    setIsDragging(true)
-  }
-
-  const handleDragEnd = (event: any, info: PanInfo) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     if (disabled) return
     
+    const touch = e.touches[0]
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    }
+    touchEndRef.current = null
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (disabled || !touchStartRef.current) return
+    
+    const touch = e.touches[0]
+    const deltaX = touch.clientX - touchStartRef.current.x
+    const deltaY = touch.clientY - touchStartRef.current.y
+    
+    // Only show visual feedback if movement is significant
+    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+      setIsDragging(true)
+      
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        setDragDirection(deltaX > 0 ? 'right' : 'left')
+      } else {
+        setDragDirection(deltaY > 0 ? 'down' : 'up')
+      }
+    }
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (disabled || !touchStartRef.current) return
+    
+    const touch = e.changedTouches[0]
+    touchEndRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    }
+    
+    const deltaX = touchEndRef.current.x - touchStartRef.current.x
+    const deltaY = touchEndRef.current.y - touchStartRef.current.y
+    const deltaTime = touchEndRef.current.time - touchStartRef.current.time
+    
+    // Reset visual state
     setIsDragging(false)
     setDragDirection(null)
-
-    const { offset } = info
-    const { x, y } = offset
-
-    // Determine swipe direction
-    if (Math.abs(x) > Math.abs(y)) {
-      // Horizontal swipe
-      if (Math.abs(x) > threshold) {
-        if (x > 0 && onSwipeRight) {
+    
+    // Only trigger swipe if movement is fast enough and exceeds threshold
+    if (deltaTime < 300 && (Math.abs(deltaX) > threshold || Math.abs(deltaY) > threshold)) {
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (deltaX > threshold && onSwipeRight) {
           onSwipeRight()
-        } else if (x < 0 && onSwipeLeft) {
+        } else if (deltaX < -threshold && onSwipeLeft) {
           onSwipeLeft()
         }
-      }
-    } else {
-      // Vertical swipe
-      if (Math.abs(y) > threshold) {
-        if (y > 0 && onSwipeDown) {
+      } else {
+        // Vertical swipe
+        if (deltaY > threshold && onSwipeDown) {
           onSwipeDown()
-        } else if (y < 0 && onSwipeUp) {
+        } else if (deltaY < -threshold && onSwipeUp) {
           onSwipeUp()
         }
       }
     }
-  }
-
-  const handleDrag = (event: any, info: PanInfo) => {
-    if (disabled) return
     
-    const { offset } = info
-    const { x, y } = offset
-
-    // Update drag direction for visual feedback
-    if (Math.abs(x) > Math.abs(y)) {
-      setDragDirection(x > 0 ? 'right' : 'left')
-    } else {
-      setDragDirection(y > 0 ? 'down' : 'up')
-    }
+    touchStartRef.current = null
+    touchEndRef.current = null
   }
 
   return (
-    <motion.div
+    <div
       ref={containerRef}
-      drag={!disabled}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.1}
-      onDragStart={handleDragStart}
-      onDrag={handleDrag}
-      onDragEnd={handleDragEnd}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className="relative touch-pan-y"
       style={{ touchAction: 'pan-y' }}
     >
@@ -126,6 +147,6 @@ export default function TouchGestures({
       >
         {children}
       </motion.div>
-    </motion.div>
+    </div>
   )
 } 
