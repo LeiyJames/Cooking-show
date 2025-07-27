@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+  /* Dark mode transitions */
+  * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-cooking-500 hover:bg-cooking-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl;
+  }
+  .btn-secondary {
+    @apply bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl;
+  }
+  .btn-outline {
+    @apply border-2 border-cooking-500 text-cooking-700 dark:text-cooking-400 hover:bg-cooking-50 dark:hover:bg-cooking-900/20 font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300;
+  }
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 focus:border-cooking-500 focus:outline-none transition-colors duration-200 text-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100;
+  }
+}
+
+/* Landscape Mode Styles */
+@media (orientation: landscape) and (max-height: 600px) {
+  .landscape-compact {
+    @apply py-2;
+  }
+  
+  .landscape-compact .card {
+    @apply p-4;
+  }
+  
+  .landscape-compact h1 {
+    @apply text-2xl;
+  }
+  
+  .landscape-compact h2 {
+    @apply text-xl;
+  }
+  
+  .landscape-compact h3 {
+    @apply text-lg;
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .tablet-grid {
+    @apply grid-cols-2;
+  }
+  
+  .tablet-text {
+    @apply text-lg;
+  }
+}
+
+/* Large Screen Optimizations */
+@media (min-width: 1024px) {
+  .desktop-grid {
+    @apply grid-cols-3;
+  }
+  
+  .desktop-text {
+    @apply text-xl;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .touch-spacing {
+    @apply gap-4;
+  }
+}
+
+/* High DPI Display Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .retina-image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .motion-safe\:animate-pulse {
+    animation: none !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+} 
