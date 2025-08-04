@@ -4,6 +4,8 @@ import './globals.css'
 import BackToTop from './components/BackToTop'
 import Footer from './components/Footer'
 import ServiceWorkerRegistration from './components/ServiceWorkerRegistration'
+import { TimerProvider } from './components/TimerContext'
+import ConditionalFooter from './components/ConditionalFooter'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -49,8 +51,10 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
       <body className={`${inter.className} bg-gradient-to-br from-cooking-50 to-warm-50 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300`}>
-        {children}
-        <Footer />
+        <TimerProvider>
+          {children}
+        </TimerProvider>
+        <ConditionalFooter />
         <BackToTop />
         <ServiceWorkerRegistration />
       </body>

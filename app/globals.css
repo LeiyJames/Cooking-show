@@ -10,6 +10,23 @@
   * {
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   }
+  
+  /* Remove number input arrows/spinners on mobile */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  
+  /* Ensure proper scrolling on mobile */
+  .card {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @layer components {
