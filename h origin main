@@ -1,0 +1,4 @@
+[33me652f07[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Add hero page, fix timer issues, and improve navigation - Added hero page with cook.png background and Menu button - Fixed NaN timer display issue with proper validation - Created per-recipe timer system with persistence - Added ConditionalFooter to hide footer on hero page - Created /menu page for Filipino dishes - Improved mobile scrolling by removing number input arrows - Enhanced timer context with better error handling
+[33m6ca616d[m[33m ([m[1;31morigin/main[m[33m)[m Fix timer card movement on mobile - Remove all motion animations and make timer completely static
+[33md0c022f[m Fix timer card movement during long press - Replace Framer Motion drag with custom touch handlers
+[33m3263cb8[m Initial commit without node_modules
