@@ -103,13 +103,14 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [saveTimerStates, isInitialized])
 
+  // Derived state to check if any timer is running
+  const hasRunningTimers = Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0);
+
   // Timer countdown effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
-    
-    if (runningDishes.length > 0) {
+    if (hasRunningTimers) {
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
@@ -152,7 +153,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+  }, [hasRunningTimers])
 
   // Screen wake lock
   useEffect(() => {
@@ -176,9 +177,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
-    
-    if (hasRunningTimer) {
+    if (hasRunningTimers) {
       requestWakeLock()
     } else {
       releaseWakeLock()
@@ -187,7 +186,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       releaseWakeLock()
     }
-  }, [timers])
+  }, [hasRunningTimers])
 
   const getTimerState = useCallback((dishName: string): TimerState => {
     const existingState = timers[dishName]
@@ -207,12 +206,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     if (typeof state.inputSeconds !== 'string' || state.inputSeconds === '') state.inputSeconds = '0'
     
     // Debug logging
-    console.log('getTimerState Debug:', {
-      dishName,
-      existingState,
-      finalState: state,
-      allTimers: Object.keys(timers)
-    })
+    // console.log('getTimerState Debug:', {
+    //   dishName,
+    //   existingState,
+    //   finalState: state,
+    //   allTimers: Object.keys(timers)
+    // })
     
     return state
   }, [timers])
@@ -346,4 +345,4 @@ export function useTimer() {
     throw new Error('useTimer must be used within a TimerProvider')
   }
   return context
-} 
+}
