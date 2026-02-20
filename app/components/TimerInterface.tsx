@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useId } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, Pause, RotateCcw, Timer, Clock, Zap } from 'lucide-react'
 import { useTimer } from './TimerContext'
@@ -46,6 +46,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
   // Additional validation to prevent NaN
   const validatedMinutes = isNaN(parseInt(displayMinutes)) ? '0' : displayMinutes
   const validatedSeconds = isNaN(parseInt(displaySeconds)) ? '0' : displaySeconds
+
+  const minutesId = useId()
+  const secondsId = useId()
 
   const handleStartTimer = () => {
     const minutes = parseInt(validatedMinutes) || 0
@@ -94,20 +97,26 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {/* Timer Presets */}
         <div className="flex justify-center gap-2 mb-4 flex-wrap">
           <button
+            type="button"
+            aria-label="Set timer for 5 minutes"
             onClick={() => setPresetTime(5, dishName || '')}
-            className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
+            className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
           >
             5min
           </button>
           <button
+            type="button"
+            aria-label="Set timer for 10 minutes"
             onClick={() => setPresetTime(10, dishName || '')}
-            className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
+            className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
           >
             10min
           </button>
           <button
+            type="button"
+            aria-label="Set timer for 15 minutes"
             onClick={() => setPresetTime(15, dishName || '')}
-            className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
+            className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
           >
             15min
           </button>
@@ -117,8 +126,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {recommendedMinutes && (
           <div className="mb-4">
             <button
+              type="button"
               onClick={handleSetRecommendedTime}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
             >
               <Clock className="w-4 h-4" />
               Set Recommended Time ({recommendedMinutes} min)
@@ -138,8 +148,14 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {/* Input Fields */}
         <div className="flex gap-4 justify-center mb-6">
           <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Minutes</label>
+            <label
+              htmlFor={minutesId}
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300"
+            >
+              Minutes
+            </label>
             <input
+              id={minutesId}
               type="number"
               value={validatedMinutes}
               onChange={(e) => updateInputValue('inputMinutes', e.target.value, dishName || '')}
@@ -149,8 +165,14 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
             />
           </div>
           <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Seconds</label>
+            <label
+              htmlFor={secondsId}
+              className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300"
+            >
+              Seconds
+            </label>
             <input
+              id={secondsId}
               type="number"
               value={validatedSeconds}
               onChange={(e) => updateInputValue('inputSeconds', e.target.value, dishName || '')}
@@ -164,26 +186,29 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {/* Control Buttons */}
         <div className="flex gap-4 justify-center">
           <button
+            type="button"
             onClick={handleStartTimer}
             disabled={timerState.isRunning}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
           >
             <Play className="w-5 h-5 mr-2" />
             Start
           </button>
 
           <button
+            type="button"
             onClick={() => pauseTimer(dishName || '')}
             disabled={!timerState.isRunning}
-            className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-500 focus:outline-none"
           >
             <Pause className="w-5 h-5 mr-2" />
             Pause
           </button>
 
           <button
+            type="button"
             onClick={() => resetTimer(dishName || '')}
-            className="btn-outline"
+            className="btn-outline focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
             Reset
@@ -193,12 +218,13 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {/* Debug: Clear All Timers (temporary) */}
         <div className="mt-4 text-center">
           <button
+            type="button"
             onClick={() => {
               clearAllTimers()
               localStorage.removeItem('recipeTimers')
               window.location.reload()
             }}
-            className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+            className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500 focus:outline-none rounded"
           >
             Clear All Timer Data (Debug)
           </button>
@@ -223,8 +249,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
                 {currentRunningDish ? `${currentRunningDish} is ready!` : 'Your cooking timer is complete!'}
               </p>
               <button
+                type="button"
                 onClick={() => setShowFinishAnimation(false)}
-                className="btn-primary"
+                className="btn-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-cooking-500 focus:outline-none"
               >
                 Got it!
               </button>
