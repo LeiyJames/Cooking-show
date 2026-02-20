@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 
 interface Ingredient {
   name: string
@@ -52,9 +53,13 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
   }, [dish.title])
 
   // Save notes to localStorage
+  const debouncedSave = useDebouncedCallback((title: string, value: string) => {
+    localStorage.setItem(`cookingNotes_${title}`, value)
+  }, 500)
+
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    debouncedSave(dish.title, value)
   }
 
   const toggleSection = (sectionId: string) => {
