@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ChefHat, Utensils } from 'lucide-react'
 
@@ -15,13 +16,23 @@ export default function HeroPage() {
   return (
     <div 
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{
-        backgroundImage: 'url(/cook.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
     >
+      {/*
+        Optimization: Use next/image for LCP (Largest Contentful Paint) optimization.
+        - `fill`: Responsive background image behavior.
+        - `priority`: Preloads the image as it's the LCP element.
+        - `quality={90}`: Ensures high visual quality for the hero section.
+        - `object-cover`: Maintains aspect ratio while filling the container.
+      */}
+      <Image
+        src="/cook.png"
+        alt="Filipino Cooking Background"
+        fill
+        priority
+        quality={90}
+        className="object-cover object-center"
+      />
+
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40"></div>
       
