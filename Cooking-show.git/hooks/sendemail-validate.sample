@@ -22,6 +22,8 @@
 # Replace the TODO placeholders with appropriate checks according to your
 # needs.
 
+REPO_ROOT=$(pwd)
+
 validate_cover_letter () {
 	file="$1"
 	# TODO: Replace with appropriate checks (e.g. spell checking).
@@ -32,8 +34,19 @@ validate_patch () {
 	file="$1"
 	# Ensure that the patch applies without conflicts.
 	git am -3 "$file" || return
-	# TODO: Replace with appropriate checks for this patch
-	# (e.g. checkpatch.pl).
+
+	# Check for whitespace errors
+	git show --check --pretty=format: || return 1
+
+	# If node_modules exists in the repo root, link it and run lint
+	if [ -d "$REPO_ROOT/node_modules" ] && [ ! -d "node_modules" ]; then
+		ln -s "$REPO_ROOT/node_modules" node_modules
+	fi
+
+	if [ -d "node_modules" ] && [ -f "package.json" ] && grep -q '"lint":' package.json && command -v npm >/dev/null; then
+		npm run lint || return 1
+	fi
+
 	true
 }
 
