@@ -24,7 +24,33 @@
 
 validate_cover_letter () {
 	file="$1"
-	# TODO: Replace with appropriate checks (e.g. spell checking).
+	# Check for placeholder subject
+	if grep -q "\*\*\* SUBJECT HERE \*\*\*" "$file"; then
+		echo "sendemail-validate: error: cover letter has placeholder subject" >&2
+		return 1
+	fi
+
+	# Check for placeholder blurb
+	if grep -q "\*\*\* BLURB HERE \*\*\*" "$file"; then
+		echo "sendemail-validate: error: cover letter has placeholder blurb" >&2
+		return 1
+	fi
+
+	# Extract body for further checks
+	body=$(sed '1,/^$/d' "$file")
+
+	if [ -z "$body" ]; then
+		echo "sendemail-validate: error: cover letter body is empty" >&2
+		return 1
+	fi
+
+	# Spell checking on body only
+	if echo "$body" | grep -iwE "teh|adn|woudl|shoudl|fiel|thier|dont"; then
+		echo "sendemail-validate: error: possible typos found in cover letter body:" >&2
+		echo "$body" | grep -iwE "teh|adn|woudl|shoudl|fiel|thier|dont" >&2
+		return 1
+	fi
+
 	true
 }
 
