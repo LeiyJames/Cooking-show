@@ -55,7 +55,6 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         })
         
         if (hasCorruptedData) {
-          console.log('Detected corrupted timer data, clearing localStorage')
           localStorage.removeItem('recipeTimers')
           setTimers({})
         } else {
@@ -79,46 +78,103 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     setIsInitialized(true)
   }, [])
 
-  // Save timer states to localStorage whenever they change (debounced)
+  // Save timer states to localStorage
   const saveTimeoutRef = useRef<NodeJS.Timeout>()
+
+  // Create a ref for timers to avoid dependency in saveTimerStates callback
+  const timersRef = useRef(timers)
+  useEffect(() => {
+    timersRef.current = timers
+  }, [timers])
+
   const saveTimerStates = useCallback(() => {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
     }
     saveTimeoutRef.current = setTimeout(() => {
-      const timersToSave = Object.keys(timers).reduce((acc, dishName) => {
+      const currentTimers = timersRef.current
+      const timersToSave = Object.keys(currentTimers).reduce((acc, dishName) => {
         acc[dishName] = {
-          ...timers[dishName],
+          ...currentTimers[dishName],
           timestamp: Date.now()
         }
         return acc
       }, {} as Record<string, TimerState>)
       localStorage.setItem('recipeTimers', JSON.stringify(timersToSave))
     }, 500)
-  }, [timers])
+  }, []) // No dependencies needed as we use ref
+
+  // IO Optimization: Only save when significant changes occur
+  const prevTimersForSaveRef = useRef<Record<string, TimerState>>({})
 
   useEffect(() => {
-    if (isInitialized) {
+    if (!isInitialized) return
+
+    const prevTimers = prevTimersForSaveRef.current
+    const currentTimers = timers
+
+    // Check if change is just a tick
+    let isTick = false
+
+    const prevKeys = Object.keys(prevTimers)
+    const currKeys = Object.keys(currentTimers)
+
+    if (prevKeys.length === currKeys.length) {
+       // Potential tick if keys match
+       const allMatch = currKeys.every(key => {
+         const prev = prevTimers[key]
+         const curr = currentTimers[key]
+
+         if (!prev) return false // Should not happen given length check
+
+         // If inputs changed, it's not a tick
+         if (prev.inputMinutes !== curr.inputMinutes || prev.inputSeconds !== curr.inputSeconds) return false
+
+         // If isRunning changed, it's not a tick (start/pause/finish)
+         if (prev.isRunning !== curr.isRunning) return false
+
+         if (curr.isRunning) {
+           // If running, tick means timeLeft decreased by 1
+           // If timeLeft went from 1 to 0, isRunning changes to false (handled above)
+           // So here we expect curr.timeLeft === prev.timeLeft - 1
+           return curr.timeLeft === prev.timeLeft - 1
+         } else {
+           // If not running, tick means no change
+           return curr.timeLeft === prev.timeLeft
+         }
+       })
+
+       if (allMatch) {
+         isTick = true
+       }
+    }
+
+    if (!isTick) {
       saveTimerStates()
     }
-  }, [saveTimerStates, isInitialized])
 
-  // Timer countdown effect
+    prevTimersForSaveRef.current = currentTimers
+  }, [timers, isInitialized, saveTimerStates])
+
+
+  // Timer countdown effect optimization
+  const anyTimerRunning = Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0)
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
-    
-    if (runningDishes.length > 0) {
+    if (anyTimerRunning) {
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
           let hasFinished = false
           let finishedDish = ''
+          let needsUpdate = false;
 
           Object.keys(updated).forEach(dishName => {
             const timer = updated[dishName]
             if (timer.isRunning && timer.timeLeft > 0) {
+              needsUpdate = true;
               if (timer.timeLeft <= 1) {
                 updated[dishName] = { ...timer, timeLeft: 0, isRunning: false }
                 hasFinished = true
@@ -128,6 +184,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
               }
             }
           })
+
+          if (!needsUpdate && !hasFinished) return prev;
 
           if (hasFinished) {
             // Haptic feedback
@@ -152,9 +210,9 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+  }, [anyTimerRunning]) // Only restarts if we start/stop all timers
 
-  // Screen wake lock
+  // Screen wake lock optimization
   useEffect(() => {
     let wakeLock: WakeLockSentinel | null = null
 
@@ -176,9 +234,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
-    
-    if (hasRunningTimer) {
+    // Use derived boolean instead of timers object
+    if (anyTimerRunning) {
       requestWakeLock()
     } else {
       releaseWakeLock()
@@ -187,7 +244,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       releaseWakeLock()
     }
-  }, [timers])
+  }, [anyTimerRunning])
 
   const getTimerState = useCallback((dishName: string): TimerState => {
     const existingState = timers[dishName]
@@ -206,27 +263,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     if (typeof state.inputMinutes !== 'string' || state.inputMinutes === '') state.inputMinutes = '0'
     if (typeof state.inputSeconds !== 'string' || state.inputSeconds === '') state.inputSeconds = '0'
     
-    // Debug logging
-    console.log('getTimerState Debug:', {
-      dishName,
-      existingState,
-      finalState: state,
-      allTimers: Object.keys(timers)
-    })
-    
     return state
   }, [timers])
 
   const startTimer = useCallback((minutes: number, seconds: number, dishName: string) => {
     const totalSeconds = minutes * 60 + seconds
     if (totalSeconds > 0) {
-      console.log('startTimer Debug:', {
-        dishName,
-        minutes,
-        seconds,
-        totalSeconds
-      })
-      
       setTimers(prev => ({
         ...prev,
         [dishName]: {
@@ -346,4 +388,4 @@ export function useTimer() {
     throw new Error('useTimer must be used within a TimerProvider')
   }
   return context
-} 
+}
