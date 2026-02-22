@@ -4,6 +4,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ChefHat, Utensils } from 'lucide-react'
+import Image from 'next/image'
 
 export default function HeroPage() {
   const router = useRouter()
@@ -13,15 +14,25 @@ export default function HeroPage() {
   }
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{
-        backgroundImage: 'url(/cook.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/*
+        Performance Optimization:
+        Replaced CSS background-image with Next.js <Image /> component.
+        - Reduces LCP by prioritizing the hero image loading.
+        - Automatically serves modern formats (WebP/AVIF) and responsive sizes.
+        - 'fill' prop combined with object-cover mimics background-size: cover.
+        - 'priority' ensures the image is preloaded as it's above the fold.
+        - '-z-10' places it behind the content.
+      */}
+      <Image
+        src="/cook.png"
+        alt="Cooking Background"
+        fill
+        priority
+        className="object-cover object-center -z-10"
+        quality={75}
+      />
+
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40"></div>
       
