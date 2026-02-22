@@ -129,6 +129,7 @@ export default function IngredientCalculator({ ingredients, originalServings, di
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={servings <= 1}
+                aria-label="Decrease servings"
               >
                 <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </motion.button>
@@ -142,6 +143,7 @@ export default function IngredientCalculator({ ingredients, originalServings, di
                 className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                aria-label="Increase servings"
               >
                 <Plus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </motion.button>
@@ -153,6 +155,7 @@ export default function IngredientCalculator({ ingredients, originalServings, di
             className="p-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-200"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Reset to original servings"
           >
             <RotateCcw className="w-4 h-4" />
           </motion.button>
