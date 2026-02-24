@@ -156,7 +156,14 @@ export default function CookingProgress({
           </span>
         </div>
         
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+        <div
+          role="progressbar"
+          aria-valuenow={Math.round(progressPercentage)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Cooking Progress"
+          className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden"
+        >
           <motion.div
             className="bg-gradient-to-r from-cooking-500 to-cooking-600 h-full rounded-full"
             initial={{ width: 0 }}
@@ -186,11 +193,15 @@ export default function CookingProgress({
                   : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50'
               }`}
             >
-              <div 
-                className="flex items-center gap-3 cursor-pointer"
+              <button
+                type="button"
+                id={`step-header-${step.id}`}
+                aria-expanded={isExpanded}
+                aria-controls={`step-content-${step.id}`}
+                className="w-full text-left flex items-center gap-3 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-cooking-500 rounded-lg"
                 onClick={() => setExpandedStep(isExpanded ? null : step.id)}
               >
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0" aria-hidden="true">
                   {getStepIcon(step)}
                 </div>
                 
@@ -223,12 +234,15 @@ export default function CookingProgress({
                     {step.description}
                   </p>
                 </div>
-              </div>
+              </button>
 
               {/* Expanded Content */}
               <AnimatePresence>
                 {isExpanded && (
                   <motion.div
+                    id={`step-content-${step.id}`}
+                    role="region"
+                    aria-labelledby={`step-header-${step.id}`}
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
