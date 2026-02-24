@@ -59,12 +59,31 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
           localStorage.removeItem('recipeTimers')
           setTimers({})
         } else {
-          // Normalize any empty strings to "0" for input fields
+          // Normalize any empty strings to "0" for input fields and adjust for elapsed time
+          const now = Date.now()
           const normalizedTimers = Object.keys(timersData).reduce((acc, dishName) => {
+            const timer = timersData[dishName]
+            let timeLeft = timer.timeLeft
+            let isRunning = timer.isRunning
+
+            // If timer was running, account for elapsed time
+            if (isRunning) {
+              const elapsedSeconds = Math.floor((now - timer.timestamp) / 1000)
+              if (elapsedSeconds > 0) {
+                timeLeft = Math.max(0, timeLeft - elapsedSeconds)
+                // If time elapsed exceeded remaining time, stop the timer
+                if (timeLeft === 0) {
+                  isRunning = false
+                }
+              }
+            }
+
             acc[dishName] = {
-              ...timersData[dishName],
-              inputMinutes: timersData[dishName].inputMinutes || '0',
-              inputSeconds: timersData[dishName].inputSeconds || '0'
+              ...timer,
+              timeLeft,
+              isRunning,
+              inputMinutes: timer.inputMinutes || '0',
+              inputSeconds: timer.inputSeconds || '0'
             }
             return acc
           }, {} as Record<string, TimerState>)
@@ -81,19 +100,55 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
 
   // Save timer states to localStorage whenever they change (debounced)
   const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const lastSavedTimersRef = useRef<Record<string, TimerState>>({})
+
   const saveTimerStates = useCallback(() => {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
     }
+
+    // Check if we actually need to save (ignore simple ticks to reduce I/O)
+    const shouldSave = () => {
+      const keys = Object.keys(timers)
+      const lastKeys = Object.keys(lastSavedTimersRef.current)
+
+      if (keys.length !== lastKeys.length) return true
+
+      return keys.some(key => {
+        const current = timers[key]
+        const last = lastSavedTimersRef.current[key]
+
+        if (!last) return true // New timer
+        if (current.isRunning !== last.isRunning) return true // State change
+        if (current.inputMinutes !== last.inputMinutes) return true // Input change
+        if (current.inputSeconds !== last.inputSeconds) return true // Input change
+
+        // If not running, any timeLeft change matters (reset/manual set)
+        if (!current.isRunning && current.timeLeft !== last.timeLeft) return true
+
+        // If running, we generally ignore timeLeft changes (just ticking)
+        // But we add a checkpoint every 30s to ensure data resilience
+        if (current.isRunning && Math.abs(current.timeLeft - last.timeLeft) >= 30) return true
+
+        return false
+      })
+    }
+
+    if (!shouldSave()) {
+        return
+    }
+
     saveTimeoutRef.current = setTimeout(() => {
       const timersToSave = Object.keys(timers).reduce((acc, dishName) => {
         acc[dishName] = {
           ...timers[dishName],
-          timestamp: Date.now()
+          timestamp: Date.now() // Update timestamp to match the saved timeLeft
         }
         return acc
       }, {} as Record<string, TimerState>)
+
       localStorage.setItem('recipeTimers', JSON.stringify(timersToSave))
+      lastSavedTimersRef.current = timersToSave
     }, 500)
   }, [timers])
 
@@ -103,56 +158,56 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [saveTimerStates, isInitialized])
 
-  // Timer countdown effect
+  // Timer countdown effect - Optimized to avoid interval thrashing
+  const hasRunningTimers = Object.values(timers).some(t => t.isRunning && t.timeLeft > 0)
+
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
+    if (!hasRunningTimers) return
 
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
-    
-    if (runningDishes.length > 0) {
-      interval = setInterval(() => {
-        setTimers(prev => {
-          const updated = { ...prev }
-          let hasFinished = false
-          let finishedDish = ''
+    const interval = setInterval(() => {
+      setTimers(prev => {
+        const updated = { ...prev }
+        let hasFinished = false
+        let finishedDish = ''
+        let hasChanges = false
 
-          Object.keys(updated).forEach(dishName => {
-            const timer = updated[dishName]
-            if (timer.isRunning && timer.timeLeft > 0) {
-              if (timer.timeLeft <= 1) {
-                updated[dishName] = { ...timer, timeLeft: 0, isRunning: false }
-                hasFinished = true
-                finishedDish = dishName
-              } else {
-                updated[dishName] = { ...timer, timeLeft: timer.timeLeft - 1 }
-              }
+        Object.keys(updated).forEach(dishName => {
+          const timer = updated[dishName]
+          if (timer.isRunning && timer.timeLeft > 0) {
+            hasChanges = true
+            if (timer.timeLeft <= 1) {
+              updated[dishName] = { ...timer, timeLeft: 0, isRunning: false }
+              hasFinished = true
+              finishedDish = dishName
+            } else {
+              updated[dishName] = { ...timer, timeLeft: timer.timeLeft - 1 }
             }
-          })
-
-          if (hasFinished) {
-            // Haptic feedback
-            if ('vibrate' in navigator) {
-              navigator.vibrate([200, 100, 200])
-            }
-            // Play sound or show notification
-            if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification('Timer Finished!', {
-                body: `${finishedDish} timer is complete!`,
-                icon: '/favicon.ico'
-              })
-            }
-            setShowFinishAnimation(true)
           }
-
-          return updated
         })
-      }, 1000)
-    }
 
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [timers])
+        if (!hasChanges) return prev
+
+        if (hasFinished) {
+          // Haptic feedback
+          if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+            navigator.vibrate([200, 100, 200])
+          }
+          // Play sound or show notification
+          if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+            new Notification('Timer Finished!', {
+              body: `${finishedDish} timer is complete!`,
+              icon: '/favicon.ico'
+            })
+          }
+          setShowFinishAnimation(true)
+        }
+
+        return updated
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [hasRunningTimers])
 
   // Screen wake lock
   useEffect(() => {
