@@ -30,6 +30,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
   const timerState = getTimerState(dishName || '')
   const currentRunningDish = getCurrentRunningDish()
 
+  const minutesId = React.useId()
+  const secondsId = React.useId()
+
   // Debug logging
   console.log('TimerInterface Debug:', {
     dishName,
@@ -95,18 +98,21 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         <div className="flex justify-center gap-2 mb-4 flex-wrap">
           <button
             onClick={() => setPresetTime(5, dishName || '')}
+            aria-label="Set timer to 5 minutes"
             className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
           >
             5min
           </button>
           <button
             onClick={() => setPresetTime(10, dishName || '')}
+            aria-label="Set timer to 10 minutes"
             className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
           >
             10min
           </button>
           <button
             onClick={() => setPresetTime(15, dishName || '')}
+            aria-label="Set timer to 15 minutes"
             className="px-3 py-1 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-300 text-sm font-medium"
           >
             15min
@@ -138,8 +144,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {/* Input Fields */}
         <div className="flex gap-4 justify-center mb-6">
           <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Minutes</label>
+            <label htmlFor={minutesId} className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Minutes</label>
             <input
+              id={minutesId}
               type="number"
               value={validatedMinutes}
               onChange={(e) => updateInputValue('inputMinutes', e.target.value, dishName || '')}
@@ -149,8 +156,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
             />
           </div>
           <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Seconds</label>
+            <label htmlFor={secondsId} className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Seconds</label>
             <input
+              id={secondsId}
               type="number"
               value={validatedSeconds}
               onChange={(e) => updateInputValue('inputSeconds', e.target.value, dishName || '')}
@@ -166,6 +174,7 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
           <button
             onClick={handleStartTimer}
             disabled={timerState.isRunning}
+            aria-label="Start timer"
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Play className="w-5 h-5 mr-2" />
@@ -175,6 +184,7 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
           <button
             onClick={() => pauseTimer(dishName || '')}
             disabled={!timerState.isRunning}
+            aria-label="Pause timer"
             className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Pause className="w-5 h-5 mr-2" />
@@ -183,6 +193,7 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
 
           <button
             onClick={() => resetTimer(dishName || '')}
+            aria-label="Reset timer"
             className="btn-outline"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
