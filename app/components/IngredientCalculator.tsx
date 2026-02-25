@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Calculator, Plus, Minus, RotateCcw } from 'lucide-react'
 
@@ -16,9 +16,16 @@ interface IngredientCalculatorProps {
   dishName?: string
 }
 
+// Move outside component to prevent recreation on every render
+const formatAmount = (amount: number) => {
+  if (amount === Math.floor(amount)) {
+    return amount.toString()
+  }
+  return amount.toFixed(2).replace(/\.?0+$/, '')
+}
+
 export default function IngredientCalculator({ ingredients, originalServings, dishName = 'recipe' }: IngredientCalculatorProps) {
   const [servings, setServings] = useState(originalServings)
-  const [scaledIngredients, setScaledIngredients] = useState<Ingredient[]>(ingredients)
   const [isInitialized, setIsInitialized] = useState(false)
 
   // Generate unique key for this calculator instance
@@ -59,13 +66,13 @@ export default function IngredientCalculator({ ingredients, originalServings, di
     }
   }, [saveCalculatorState, isInitialized])
 
-  useEffect(() => {
+  // Optimize: Use useMemo for derived state to prevent unnecessary re-renders
+  const scaledIngredients = useMemo(() => {
     const scale = servings / originalServings
-    const scaled = ingredients.map(ingredient => ({
+    return ingredients.map(ingredient => ({
       ...ingredient,
       amount: Math.round((ingredient.amount * scale) * 100) / 100
     }))
-    setScaledIngredients(scaled)
   }, [servings, originalServings, ingredients])
 
   const adjustServings = (increment: number) => {
@@ -76,13 +83,6 @@ export default function IngredientCalculator({ ingredients, originalServings, di
   const resetServings = () => {
     setServings(originalServings)
     localStorage.removeItem(calculatorKey)
-  }
-
-  const formatAmount = (amount: number) => {
-    if (amount === Math.floor(amount)) {
-      return amount.toString()
-    }
-    return amount.toFixed(2).replace(/\.?0+$/, '')
   }
 
   // Cleanup timeout on unmount
