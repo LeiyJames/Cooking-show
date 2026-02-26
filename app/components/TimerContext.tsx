@@ -104,12 +104,14 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   }, [saveTimerStates, isInitialized])
 
   // Timer countdown effect
+  // Calculate if there are any running timers to control interval activation
+  // This derived value is used in the useEffect dependency to prevent interval thrashing
+  const hasRunningTimers = Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0)
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
-    
-    if (runningDishes.length > 0) {
+    if (hasRunningTimers) {
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
@@ -152,7 +154,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+  }, [hasRunningTimers])
 
   // Screen wake lock
   useEffect(() => {
