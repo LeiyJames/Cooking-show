@@ -167,6 +167,7 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
             onClick={handleStartTimer}
             disabled={timerState.isRunning}
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Start timer"
           >
             <Play className="w-5 h-5 mr-2" />
             Start
@@ -176,6 +177,7 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
             onClick={() => pauseTimer(dishName || '')}
             disabled={!timerState.isRunning}
             className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Pause timer"
           >
             <Pause className="w-5 h-5 mr-2" />
             Pause
@@ -184,6 +186,7 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
           <button
             onClick={() => resetTimer(dishName || '')}
             className="btn-outline"
+            aria-label="Reset timer"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
             Reset

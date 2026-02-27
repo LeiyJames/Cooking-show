@@ -140,6 +140,7 @@ export default function CookingProgress({
         <button
           onClick={resetProgress}
           className="text-sm text-cooking-600 dark:text-cooking-400 hover:text-cooking-700 dark:hover:text-cooking-300 transition-colors duration-300"
+          aria-label="Reset progress"
         >
           Reset
         </button>
