@@ -104,17 +104,39 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   }, [saveTimerStates, isInitialized])
 
   // Timer countdown effect
+  // Use useMemo to prevent unnecessary re-evaluations
+  // We need to derive this from the timers object, but NOT use timers as a dependency
+  // for the effect itself.
+
+  // Calculate if any timer is active (running and has time left)
+  // This value changes every second because 'timers' changes every second,
+  // but the boolean result is stable while a timer is running.
+  // We use the boolean result as the dependency for the effect.
+  const hasActiveTimers = Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0)
+
   useEffect(() => {
+    console.log('Timer effect running')
     let interval: NodeJS.Timeout | null = null
 
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
-    
-    if (runningDishes.length > 0) {
+    if (hasActiveTimers) {
+      // The interval needs to be stable and not restart on every tick.
+      // We rely on the functional update form of setTimers to get the latest state,
+      // OR we can use the ref if we need to do complex logic that setTimers(prev => ...) doesn't cover easily.
+      // In this case, functional update is sufficient and correct because it receives the latest state.
+
+      // Important: We must not depend on `setTimers(prev => ...)` alone if we want the interval to be
+      // independent of the render cycle while also having access to the latest state if needed for other logic.
+      // But actually, `setTimers(prev => ...)` IS safe and correct here.
+      // The issue with the previous implementation was that the `useEffect` itself depended on `[timers]`,
+      // causing the effect to teardown and recreate every second.
+      // By depending on `[hasActiveTimers]`, we only set up the interval when needed.
+
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
           let hasFinished = false
           let finishedDish = ''
+          let stillHasActiveTimers = false
 
           Object.keys(updated).forEach(dishName => {
             const timer = updated[dishName]
@@ -125,6 +147,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
                 finishedDish = dishName
               } else {
                 updated[dishName] = { ...timer, timeLeft: timer.timeLeft - 1 }
+                stillHasActiveTimers = true
               }
             }
           })
@@ -152,9 +175,14 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+    // We only want this effect to change if hasActiveTimers changes (i.e. transitions from false to true or true to false).
+    // The previous implementation had [timers] which changed every second.
+    // By using [hasActiveTimers], we ensure the interval is set once and continues running until all timers stop.
+  }, [hasActiveTimers])
 
   // Screen wake lock
+  const anyTimerRunning = Object.values(timers).some(timer => timer.isRunning)
+
   useEffect(() => {
     let wakeLock: WakeLockSentinel | null = null
 
@@ -176,9 +204,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
-    
-    if (hasRunningTimer) {
+    if (anyTimerRunning) {
       requestWakeLock()
     } else {
       releaseWakeLock()
@@ -187,7 +213,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       releaseWakeLock()
     }
-  }, [timers])
+  }, [anyTimerRunning])
 
   const getTimerState = useCallback((dishName: string): TimerState => {
     const existingState = timers[dishName]
