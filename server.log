@@ -1,0 +1,72 @@
+
+> cooking-timer-app@0.1.0 dev
+> next dev
+
+   ▲ Next.js 14.0.4
+   - Local:        http://localhost:3000
+
+ ✓ Ready in 1995ms
+ ○ Compiling /filipino/[dish] ...
+Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled /filipino/[dish] in 6.9s (1167 modules)
+ ✓ Compiled in 828ms (585 modules)
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /filipino/adobo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /filipino/adobo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+getTimerState Debug: {
+  dishName: 'Chicken Adobo',
+  existingState: undefined,
+  finalState: {
+    timeLeft: 0,
+    isRunning: false,
+    inputMinutes: '0',
+    inputSeconds: '0',
+    timestamp: 1772165855124
+  },
+  allTimers: []
+}
+TimerInterface Debug: {
+  dishName: 'Chicken Adobo',
+  timerState: {
+    timeLeft: 0,
+    isRunning: false,
+    inputMinutes: '0',
+    inputSeconds: '0',
+    timestamp: 1772165855124
+  },
+  currentRunningDish: null,
+  displayMinutes: '0',
+  displaySeconds: '0'
+}
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /filipino/adobo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /filipino/adobo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+getTimerState Debug: {
+  dishName: 'Chicken Adobo',
+  existingState: undefined,
+  finalState: {
+    timeLeft: 0,
+    isRunning: false,
+    inputMinutes: '0',
+    inputSeconds: '0',
+    timestamp: 1772165872128
+  },
+  allTimers: []
+}
+TimerInterface Debug: {
+  dishName: 'Chicken Adobo',
+  timerState: {
+    timeLeft: 0,
+    isRunning: false,
+    inputMinutes: '0',
+    inputSeconds: '0',
+    timestamp: 1772165872128
+  },
+  currentRunningDish: null,
+  displayMinutes: '0',
+  displaySeconds: '0'
+}
