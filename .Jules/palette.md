@@ -1,0 +1,3 @@
+## 2024-05-15 - Dynamic Servings Counter Accessibility
+**Learning:** Added `aria-label` to icon-only buttons (decrease, increase, reset) in the IngredientCalculator. Also learned that adding `aria-live="polite"` and `aria-atomic="true"` to a dynamically updating value (like the servings count) ensures screen readers naturally announce the new count when the user clicks the plus or minus buttons.
+**Action:** Always verify that icon-only interactive elements have an `aria-label`, and use `aria-live` regions for status text or counters that change without a full page reload so visually impaired users are kept informed of the changing state.

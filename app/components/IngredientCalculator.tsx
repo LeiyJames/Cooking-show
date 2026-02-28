@@ -125,6 +125,7 @@ export default function IngredientCalculator({ ingredients, originalServings, di
             <div className="flex items-center gap-3">
               <motion.button
                 onClick={() => adjustServings(-1)}
+                aria-label="Decrease servings"
                 className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -133,12 +134,17 @@ export default function IngredientCalculator({ ingredients, originalServings, di
                 <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </motion.button>
               
-              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center">
+              <span
+                className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center"
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 {servings}
               </span>
               
               <motion.button
                 onClick={() => adjustServings(1)}
+                aria-label="Increase servings"
                 className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -150,6 +156,7 @@ export default function IngredientCalculator({ ingredients, originalServings, di
           
           <motion.button
             onClick={resetServings}
+            aria-label="Reset servings to original amount"
             className="p-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-200"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
