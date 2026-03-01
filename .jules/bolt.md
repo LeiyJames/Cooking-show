@@ -1,0 +1,3 @@
+## 2024-12-05 - [Component Optimization: IngredientCalculator]
+**Learning:** Derived state (like scaled ingredients based on portions/servings) should be calculated synchronously during the render process using `useMemo` instead of being synchronized using `useEffect` and `useState`. Using `useEffect` triggers a second render pass after the first commit (e.g., servings state updates -> renders once -> useEffect runs -> scaledIngredients updates -> renders twice).
+**Action:** When a piece of state can be calculated entirely from props or other state variables, use `useMemo` instead of duplicating it in a separate `useState` initialized or updated by `useEffect`.

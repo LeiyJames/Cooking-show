@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Calculator, Plus, Minus, RotateCcw } from 'lucide-react'
 
@@ -18,7 +18,6 @@ interface IngredientCalculatorProps {
 
 export default function IngredientCalculator({ ingredients, originalServings, dishName = 'recipe' }: IngredientCalculatorProps) {
   const [servings, setServings] = useState(originalServings)
-  const [scaledIngredients, setScaledIngredients] = useState<Ingredient[]>(ingredients)
   const [isInitialized, setIsInitialized] = useState(false)
 
   // Generate unique key for this calculator instance
@@ -59,13 +58,15 @@ export default function IngredientCalculator({ ingredients, originalServings, di
     }
   }, [saveCalculatorState, isInitialized])
 
-  useEffect(() => {
+  // ⚡ Bolt: Derived state optimization
+  // Calculate scaled ingredients during render instead of using a separate useState/useEffect.
+  // This prevents an unnecessary double-render when 'servings' changes.
+  const scaledIngredients = useMemo(() => {
     const scale = servings / originalServings
-    const scaled = ingredients.map(ingredient => ({
+    return ingredients.map(ingredient => ({
       ...ingredient,
       amount: Math.round((ingredient.amount * scale) * 100) / 100
     }))
-    setScaledIngredients(scaled)
   }, [servings, originalServings, ingredients])
 
   const adjustServings = (increment: number) => {
