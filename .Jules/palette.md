@@ -1,0 +1,3 @@
+## 2024-05-18 - Ingredient Calculator Dynamic Counts & Actions
+**Learning:** Dynamic values like serving counts need `aria-live="polite"` and `aria-atomic="true"` to announce updates efficiently. Icon buttons (`Plus`, `Minus`, `Reset`) must have explicit `aria-label`s and visual disabled states (e.g., `disabled:opacity-50 disabled:cursor-not-allowed`) to convey their interactivity boundaries clearly, avoiding confusion when actions are not possible (e.g. servings <= 1).
+**Action:** Consistently verify if dynamic values function as live regions and ensure all icon-only action elements combine semantic labeling with visual disabled constraints across the app's components.
