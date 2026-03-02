@@ -1,0 +1,3 @@
+## 2024-05-14 - Interactive Counter Accessibility
+**Learning:** Icon-only counter buttons (like scaling servings) require explicit `aria-label`s and visual disabled states (e.g., `disabled:opacity-50 disabled:cursor-not-allowed`) to be accessible. Furthermore, dynamic values updated by these buttons need `aria-live="polite"` and `aria-atomic="true"` so screen readers announce the new value upon change without interrupting the user.
+**Action:** Always apply `aria-label` to icon buttons, use Tailwind `disabled:` modifiers for interactive visual feedback, and use `aria-live` regions for any counter/number that changes interactively.
