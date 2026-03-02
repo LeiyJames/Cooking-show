@@ -1,0 +1,3 @@
+## 2024-05-24 - [Debounce localStorage writes in textareas]
+**Learning:** Synchronous operations, specifically `localStorage.setItem`, can block the main thread and cause UI jank when tied to high-frequency events like keystrokes in a textarea (e.g. `onChange`). React state updates are fast enough, but appending I/O tasks to every keystroke event degrades typing performance.
+**Action:** Always debounce `localStorage` writes (or any other I/O operations like API calls) when tying them to text input `onChange` handlers. Use a 500ms timeout with `useRef` to store the timeout ID and clear it on each subsequent keystroke and component unmount.
