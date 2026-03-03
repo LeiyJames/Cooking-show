@@ -1,0 +1,3 @@
+## 2024-05-24 - [Avoid Unnecessary Double Renders]
+**Learning:** Derived state should be calculated during render using `useMemo` rather than being synchronized via a combination of `useState` and `useEffect`. For example, in `IngredientCalculator.tsx`, scaling ingredients in a `useEffect` caused a double render every time the `servings` state changed.
+**Action:** Always prefer deriving values directly from props and state within the component body (optionally wrapped in `useMemo` for expensive calculations or reference equality) instead of creating a redundant state variable that gets updated in an effect.
