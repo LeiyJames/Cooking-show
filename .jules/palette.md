@@ -1,0 +1,3 @@
+## 2024-03-14 - Missing ARIA attributes in custom Accordion components
+**Learning:** Custom accordion components in React/Framer Motion using `<button>` and animated `<motion.div>` content were missing required ARIA attributes (`aria-expanded` and `aria-controls`) that link the button to the hidden content and communicate the expanded state to screen readers.
+**Action:** Always verify that interactive custom components (like accordions or tabs) include the standard semantic ARIA roles and state attributes (`aria-expanded`, `aria-controls`, `id`), particularly when building with animation libraries that handle the DOM presence or height changes.
