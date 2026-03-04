@@ -1,0 +1,3 @@
+## 2024-03-04 - Accessible Custom Steppers
+**Learning:** Custom steppers (like the IngredientCalculator) require a combination of visual disabled indicators, tooltips for icon buttons, and `aria-live` regions for dynamic value announcements to be fully accessible. Without these, screen readers won't announce the updated values and users won't know when they've reached the minimum limit.
+**Action:** Always add `aria-live="polite"` and `aria-atomic="true"` to dynamic text displays, `aria-label` and `title` to icon-only buttons, and visual disabled states (`disabled:opacity-50 disabled:cursor-not-allowed`) to buttons that have functional limits.
