@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -46,11 +46,39 @@ export default function RecipeSections() {
     if (savedTips) setTips(JSON.parse(savedTips))
   }, [])
 
-  // Save notes to localStorage
+  // Save notes to localStorage (debounced for performance)
+  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const notesRef = useRef(notes)
+
+  // Keep notesRef updated so the cleanup function has the latest value
+  useEffect(() => {
+    notesRef.current = notes
+  }, [notes])
+
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem('cookingNotes', value)
+
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    // Set new timeout for debounced localStorage write
+    saveTimeoutRef.current = setTimeout(() => {
+      localStorage.setItem('cookingNotes', value)
+      saveTimeoutRef.current = undefined
+    }, 500)
   }
+
+  // Cleanup timeout on unmount and synchronously flush any pending save
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        localStorage.setItem('cookingNotes', notesRef.current)
+      }
+    }
+  }, [])
 
   const toggleSection = (sectionId: string) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId)
