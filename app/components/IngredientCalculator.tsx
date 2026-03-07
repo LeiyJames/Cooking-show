@@ -124,20 +124,24 @@ export default function IngredientCalculator({ ingredients, originalServings, di
             </label>
             <div className="flex items-center gap-3">
               <motion.button
+                aria-label="Decrease servings"
+                title="Decrease servings"
                 onClick={() => adjustServings(-1)}
-                className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={servings <= 1 ? {} : { scale: 1.05 }}
+                whileTap={servings <= 1 ? {} : { scale: 0.95 }}
                 disabled={servings <= 1}
               >
                 <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </motion.button>
               
-              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center">
+              <span aria-live="polite" aria-atomic="true" className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center">
                 {servings}
               </span>
               
               <motion.button
+                aria-label="Increase servings"
+                title="Increase servings"
                 onClick={() => adjustServings(1)}
                 className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
@@ -149,6 +153,8 @@ export default function IngredientCalculator({ ingredients, originalServings, di
           </div>
           
           <motion.button
+            aria-label="Reset servings"
+            title="Reset servings"
             onClick={resetServings}
             className="p-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-200"
             whileHover={{ scale: 1.05 }}
