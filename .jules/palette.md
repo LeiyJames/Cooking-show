@@ -1,0 +1,3 @@
+## 2024-03-09 - Framer Motion Tactile Feedback on Disabled Elements
+**Learning:** When using Framer Motion with Tailwind CSS on interactive elements, applying standard visual disabled states (e.g., `disabled:opacity-50 disabled:cursor-not-allowed`) is not enough. The `whileHover` and `whileTap` motion properties remain active, leading to confusing tactile feedback (e.g., scaling up) on buttons that are supposed to be disabled.
+**Action:** Always conditionally disable motion properties on `framer-motion` elements that can have a disabled state (e.g., `whileHover={isDisabled ? {} : { scale: 1.05 }}`) to match the visual and functional disabled state.
