@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import TimerInterface from '../../components/TimerInterface'
@@ -1795,6 +1795,11 @@ export default function FilipinoDishPage() {
     }
   }
 
+  // ⚡ Bolt: Convert O(N) Array.includes to O(1) Set.has for membership checks within the dish.steps.map loop.
+  // This memoized Set prevents an O(N*M) algorithmic complexity inside the React render phase,
+  // leading to noticeably faster processing for recipes with multiple steps.
+  const completedStepsSet = useMemo(() => new Set(completedSteps), [completedSteps])
+
   if (!dish) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cooking-50 to-warm-50 dark:from-gray-900 dark:to-gray-800">
@@ -1815,7 +1820,7 @@ export default function FilipinoDishPage() {
     id: index + 1,
     description: step,
     estimatedTime: 5, // Default time, could be extracted from step text
-    isCompleted: completedSteps.includes(index + 1)
+    isCompleted: completedStepsSet.has(index + 1)
   }))
 
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, Circle, Clock, ChefHat } from 'lucide-react'
 
@@ -81,8 +81,13 @@ export default function CookingProgress({
   const completedStepsCount = completedSteps.length
   const progressPercentage = (completedStepsCount / steps.length) * 100
 
+  // ⚡ Bolt: Use a Set for O(1) membership checks instead of O(N) Array.includes inside the render loop.
+  // This converts the overall lookup complexity in the steps map from O(N*M) to O(N+M), preventing
+  // unnecessary performance degradation as the number of steps or completed steps grows.
+  const completedStepsSet = useMemo(() => new Set(completedSteps), [completedSteps])
+
   const getStepIcon = (step: CookingStep) => {
-    if (completedSteps.includes(step.id)) {
+    if (completedStepsSet.has(step.id)) {
       return <CheckCircle className="w-5 h-5 text-green-500" />
     }
     if (step.id === localCurrentStep) {
@@ -92,7 +97,7 @@ export default function CookingProgress({
   }
 
   const getStepStatus = (step: CookingStep) => {
-    if (completedSteps.includes(step.id)) return 'completed'
+    if (completedStepsSet.has(step.id)) return 'completed'
     if (step.id === localCurrentStep) return 'current'
     return 'pending'
   }
@@ -236,7 +241,7 @@ export default function CookingProgress({
                     className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600"
                   >
                     <div className="flex gap-2">
-                      {!completedSteps.includes(step.id) && (
+                      {!completedStepsSet.has(step.id) && (
                         <motion.button
                           onClick={() => handleStepComplete(step.id)}
                           className="px-3 py-1 bg-cooking-500 hover:bg-cooking-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
@@ -247,7 +252,7 @@ export default function CookingProgress({
                         </motion.button>
                       )}
                       
-                      {completedSteps.includes(step.id) && (
+                      {completedStepsSet.has(step.id) && (
                         <motion.button
                           onClick={() => handleStepSelect(step.id)}
                           className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
