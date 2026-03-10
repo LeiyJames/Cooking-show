@@ -1,0 +1,3 @@
+## 2024-03-10 - Missing ARIA Attributes on Interactive Headers
+**Learning:** Interactive accordion headers (expandable sections) in this application's components (`RecipeSections.tsx` and `FilipinoRecipeSections.tsx`) were using `<button>` elements but lacked essential ARIA attributes (`aria-expanded` and `aria-controls`) to communicate their state and relationships to screen readers.
+**Action:** Always ensure that any interactive elements used to toggle visibility of content include `aria-expanded` to indicate their current state and `aria-controls` referencing the `id` of the content they manage. This pattern should be consistently applied to all custom accordion or disclosure widgets in the codebase.
