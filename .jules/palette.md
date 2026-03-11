@@ -1,0 +1,3 @@
+## 2024-03-12 - Conditionally Disabling Framer Motion Interactivity
+**Learning:** Framer-motion elements with `whileHover` and `whileTap` properties will still execute their visual scaling/animation feedback even when the underlying HTML element has the `disabled` attribute and visual disabled CSS classes. This creates a confusing UX where a visually "disabled" button still feels tactile and interactive.
+**Action:** When applying visual disabled states to interactive `framer-motion` elements, always conditionally apply the motion properties based on the disabled state (e.g., `whileHover={isDisabled ? {} : { scale: 1.05 }}`) to ensure the element feels completely inert when disabled.
