@@ -103,13 +103,14 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [saveTimerStates, isInitialized])
 
+  // Derive primitive boolean to avoid thrashing useEffect
+  const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0)
+
   // Timer countdown effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
-
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
     
-    if (runningDishes.length > 0) {
+    if (hasRunningTimer) {
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
@@ -152,7 +153,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+  }, [hasRunningTimer])
 
   // Screen wake lock
   useEffect(() => {
@@ -175,8 +176,6 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         setIsScreenWake(false)
       }
     }
-
-    const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
     
     if (hasRunningTimer) {
       requestWakeLock()
@@ -187,7 +186,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       releaseWakeLock()
     }
-  }, [timers])
+  }, [hasRunningTimer])
 
   const getTimerState = useCallback((dishName: string): TimerState => {
     const existingState = timers[dishName]
