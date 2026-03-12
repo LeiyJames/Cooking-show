@@ -1,0 +1,3 @@
+## 2024-05-24 - Conditionally Disable Framer Motion Properties on Disabled Buttons
+**Learning:** When applying visual disabled states (e.g., `disabled:opacity-50 disabled:cursor-not-allowed`) to standard HTML buttons wrapped with `framer-motion` (`motion.button`), interactive properties like `whileHover` and `whileTap` continue to provide tactile feedback to the user even though the element visually appears disabled and does not trigger `onClick`.
+**Action:** When adding standard HTML `disabled` attributes to `framer-motion` elements, always conditionally disable their interactive motion properties (e.g., `whileHover={isDisabled ? {} : { scale: 1.05 }}`) to match the visual state and prevent confusing interactions.
