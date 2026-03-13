@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import TimerInterface from '../../components/TimerInterface'
@@ -1770,6 +1770,9 @@ export default function FilipinoDishPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
 
+  // Optimize membership checks by deriving a Set.
+  const completedStepsSet = useMemo(() => new Set(completedSteps), [completedSteps])
+
   const handleBack = () => {
     router.back()
   }
@@ -1815,7 +1818,7 @@ export default function FilipinoDishPage() {
     id: index + 1,
     description: step,
     estimatedTime: 5, // Default time, could be extracted from step text
-    isCompleted: completedSteps.includes(index + 1)
+    isCompleted: completedStepsSet.has(index + 1)
   }))
 
   return (
