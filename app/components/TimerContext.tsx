@@ -103,13 +103,17 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [saveTimerStates, isInitialized])
 
+  // ⚡ Bolt Optimization: Derive stable boolean to prevent hook thrashing on every tick
+  const hasActiveTimers = Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0)
+  const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
+
   // Timer countdown effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
 
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
-    
-    if (runningDishes.length > 0) {
+    // ⚡ Bolt Optimization: Only manage the interval based on the existence of ANY active timer,
+    // avoiding teardown/recreation of the interval every 1 second when the state updates.
+    if (hasActiveTimers) {
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
@@ -152,7 +156,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+  }, [hasActiveTimers])
 
   // Screen wake lock
   useEffect(() => {
@@ -176,8 +180,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
-    
+    // ⚡ Bolt Optimization: Use the derived boolean to prevent requesting/releasing wake lock
+    // every single second when the timer counts down.
     if (hasRunningTimer) {
       requestWakeLock()
     } else {
@@ -187,7 +191,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       releaseWakeLock()
     }
-  }, [timers])
+  }, [hasRunningTimer])
 
   const getTimerState = useCallback((dishName: string): TimerState => {
     const existingState = timers[dishName]
