@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -37,6 +37,8 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
   const [ingredients, setIngredients] = useState(dish.ingredients)
   const [steps, setSteps] = useState(dish.steps)
   const [tips, setTips] = useState(dish.tips)
+  const pendingNotesRef = useRef<string | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Load saved data from localStorage
   useEffect(() => {
@@ -46,15 +48,41 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
     const savedTips = localStorage.getItem(`cookingTips_${dish.title}`)
 
     if (savedNotes) setNotes(savedNotes)
-    if (savedIngredients) setIngredients(JSON.parse(savedIngredients))
-    if (savedSteps) setSteps(JSON.parse(savedSteps))
-    if (savedTips) setTips(JSON.parse(savedTips))
+
+    try {
+      if (savedIngredients) setIngredients(JSON.parse(savedIngredients))
+      if (savedSteps) setSteps(JSON.parse(savedSteps))
+      if (savedTips) setTips(JSON.parse(savedTips))
+    } catch (e) {
+      console.error('Failed to parse saved recipe data', e)
+    }
+  }, [dish.title])
+
+  // Cleanup pending writes on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      if (pendingNotesRef.current !== null) {
+        localStorage.setItem(`cookingNotes_${dish.title}`, pendingNotesRef.current)
+      }
+    }
   }, [dish.title])
 
   // Save notes to localStorage
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    pendingNotesRef.current = value
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      localStorage.setItem(`cookingNotes_${dish.title}`, value)
+      pendingNotesRef.current = null
+    }, 500)
   }
 
   const toggleSection = (sectionId: string) => {
