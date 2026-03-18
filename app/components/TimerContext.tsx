@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react'
 
 interface TimerState {
   timeLeft: number
@@ -34,6 +34,14 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const [isScreenWake, setIsScreenWake] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
 
+  const hasActiveTimers = useMemo(() => {
+    return Object.values(timers).some(timer => timer.isRunning && timer.timeLeft > 0)
+  }, [timers])
+
+  const hasRunningTimer = useMemo(() => {
+    return Object.values(timers).some(timer => timer.isRunning)
+  }, [timers])
+
   // Load saved timer states from localStorage
   useEffect(() => {
     const savedTimers = localStorage.getItem('recipeTimers')
@@ -42,16 +50,13 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         const timersData = JSON.parse(savedTimers)
         
         // Check if data is corrupted or has invalid values
-        let hasCorruptedData = false
-        Object.keys(timersData).forEach(dishName => {
+        const hasCorruptedData = Object.keys(timersData).some(dishName => {
           const timer = timersData[dishName]
-          if (isNaN(timer.timeLeft) || 
-              typeof timer.inputMinutes !== 'string' || 
-              typeof timer.inputSeconds !== 'string' ||
-              timer.inputMinutes === '' ||
-              timer.inputSeconds === '') {
-            hasCorruptedData = true
-          }
+          return isNaN(timer.timeLeft) ||
+                 typeof timer.inputMinutes !== 'string' ||
+                 typeof timer.inputSeconds !== 'string' ||
+                 timer.inputMinutes === '' ||
+                 timer.inputSeconds === ''
         })
         
         if (hasCorruptedData) {
@@ -106,10 +111,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   // Timer countdown effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null
-
-    const runningDishes = Object.entries(timers).filter(([_, timer]) => timer.isRunning && timer.timeLeft > 0)
     
-    if (runningDishes.length > 0) {
+    if (hasActiveTimers) {
       interval = setInterval(() => {
         setTimers(prev => {
           const updated = { ...prev }
@@ -152,7 +155,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [timers])
+  }, [hasActiveTimers])
 
   // Screen wake lock
   useEffect(() => {
@@ -175,8 +178,6 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         setIsScreenWake(false)
       }
     }
-
-    const hasRunningTimer = Object.values(timers).some(timer => timer.isRunning)
     
     if (hasRunningTimer) {
       requestWakeLock()
@@ -187,7 +188,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => {
       releaseWakeLock()
     }
-  }, [timers])
+  }, [hasRunningTimer])
 
   const getTimerState = useCallback((dishName: string): TimerState => {
     const existingState = timers[dishName]
