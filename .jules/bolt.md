@@ -1,0 +1,3 @@
+## 2024-03-19 - O(1) Lookups in Render Loops
+**Learning:** Checking for membership in an array (`array.includes(id)`) inside a React `.map` render loop creates an `O(N*M)` performance bottleneck (where N is loop size and M is array size), particularly for dynamic UI components like progress trackers where the array changes often.
+**Action:** Always derive a `Set` from the array using `useMemo` outside the render loop (`const lookupSet = useMemo(() => new Set(array), [array])`), converting the operation to `O(N)` with `O(1)` membership checks via `lookupSet.has(id)`.
