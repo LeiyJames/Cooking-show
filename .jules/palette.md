@@ -1,0 +1,3 @@
+## 2024-05-24 - Framer Motion disabled states and dynamic aria-live
+**Learning:** `framer-motion` animations like `whileHover` and `whileTap` bypass standard CSS visually disabled states (like `disabled:opacity-50`). Also, dynamic number displays like servings need explicit `aria-live` and `aria-atomic` attributes for screen readers.
+**Action:** When applying visual disabled classes to interactive elements using `framer-motion`, conditionally disable motion properties (e.g. `whileHover={isDisabled ? {} : { scale: 1.05 }}`). Use `aria-live="polite"` and `aria-atomic="true"` on span tags that dynamically update values.
