@@ -1,0 +1,3 @@
+## 2024-03-21 - Add ARIA attributes to recipe accordion sections
+**Learning:** Interactive `<button>` elements that toggle an expandable region (like accordion headers for recipe sections) must include `aria-expanded` and `aria-controls` attributes linking to the content area's `id`. Without these, screen reader users cannot perceive the element's expanded/collapsed state or its relationship to the revealed content.
+**Action:** When creating or reviewing custom accordion/disclosure components, always ensure the trigger element has `aria-expanded` tied to its state and `aria-controls` matching the `id` of the collapsible container.
