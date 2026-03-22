@@ -1,0 +1,3 @@
+## 2024-05-19 - Conditional Framer Motion interactive states for disabled elements
+**Learning:** Adding standard visual disabled states (like `disabled:opacity-50`) to `<motion.button>` elements is insufficient for a good user experience because framer-motion's interactive props (`whileHover`, `whileTap`) still provide tactile feedback (like scaling up) when the disabled element is interacted with. This causes confusion and makes the element appear interactive when it isn't.
+**Action:** Always conditionally disable interactive animation properties (e.g., `whileHover={isDisabled ? {} : { scale: 1.05 }}`) alongside visual disabled states to ensure visually disabled buttons don't react to user interactions.
