@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import TimerInterface from '../../components/TimerInterface'
@@ -1770,13 +1770,19 @@ export default function FilipinoDishPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [completedSteps, setCompletedSteps] = useState<number[]>([])
 
+  // ⚡ Bolt Performance Optimization:
+  // Convert completedSteps array into a Set and memoize it.
+  // Replaces O(N^2) .includes() lookups in the steps mapping with O(N) Set creation
+  // and O(1) .has() lookups, significantly improving performance for large step arrays.
+  const completedStepsSet = useMemo(() => new Set(completedSteps), [completedSteps])
+
   const handleBack = () => {
     router.back()
   }
 
   const handleStepComplete = (stepId: number) => {
     setCompletedSteps(prev => [...prev, stepId])
-    setCurrentStep(prev => Math.min(prev + 1, dish.steps.length))
+    setCurrentStep(prev => dish ? Math.min(prev + 1, dish.steps.length) : prev)
   }
 
   const handleStepSelect = (stepId: number) => {
@@ -1784,7 +1790,7 @@ export default function FilipinoDishPage() {
   }
 
   const handleSwipeLeft = () => {
-    if (currentStep < dish.steps.length) {
+    if (dish && currentStep < dish.steps.length) {
       setCurrentStep(prev => prev + 1)
     }
   }
@@ -1815,7 +1821,7 @@ export default function FilipinoDishPage() {
     id: index + 1,
     description: step,
     estimatedTime: 5, // Default time, could be extracted from step text
-    isCompleted: completedSteps.includes(index + 1)
+    isCompleted: completedStepsSet.has(index + 1)
   }))
 
   return (
