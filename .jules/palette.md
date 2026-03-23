@@ -1,0 +1,4 @@
+## 2024-05-15 - Initialized Palette Journal
+## 2024-05-15 - ARIA Grouping for Complex Increment/Decrement Inputs
+**Learning:** When using multi-button interactive controls for a single numerical value (like servings +/- buttons), standard single-input `aria-label`s aren't enough for screen readers. They need to understand the buttons are related to the central value.
+**Action:** Always wrap increment/decrement control clusters in a `role="group"` and use `aria-labelledby` pointing to the associated label's ID. Use `React.useId()` to ensure the ID is stable and unique across multiple instances. Conditionally disable `framer-motion`'s `whileHover` and `whileTap` when buttons are logically disabled to prevent conflicting interactive visual cues. Ensure the actual numerical value has `aria-live="polite"` and `aria-atomic="true"` so changes are announced without requiring a separate live region.
