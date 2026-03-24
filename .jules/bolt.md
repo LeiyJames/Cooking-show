@@ -1,0 +1,3 @@
+## 2024-05-18 - [Optimize Array Membership Check in Render Loop]
+**Learning:** Membership checks within render loops (e.g., `completedSteps.includes(id)`) can be extremely expensive (O(N*M)) inside large or frequently updated lists. Converting the source array to a `Set` via `useMemo` optimizes this to O(1) hash lookups, avoiding performance overhead.
+**Action:** When performing array `.includes()` operations inside large components (like `dish.steps.map`), derive a `Set` from the source array using `useMemo` first, then use `Set.has()`. Always wrap `useMemo` and ensure hooks are not inside conditions.
