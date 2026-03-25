@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import React from 'react'
-import Header from '../components/Header'
-import FoodCard from '../components/FoodCard'
+import React from "react";
+import Header from "../components/Header";
+import FoodCard from "../components/FoodCard";
 
 export default function MenuPage() {
   return (
@@ -10,12 +10,16 @@ export default function MenuPage() {
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 transition-colors duration-300">🍽️ Popular Filipino Dishes</h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors duration-300">Discover authentic Filipino recipes with step-by-step instructions</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-4 transition-colors duration-300">
+            🍽️ Popular Filipino Dishes
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors duration-300">
+            Discover authentic Filipino recipes with step-by-step instructions
+          </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <FoodCard 
+          <FoodCard
             title="Adobo"
             description="Classic Filipino chicken or pork adobo with soy sauce and vinegar"
             image="🍗"
@@ -25,7 +29,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.8}
           />
-          <FoodCard 
+          <FoodCard
             title="Sinigang"
             description="Sour tamarind soup with pork and vegetables"
             image="🥘"
@@ -35,7 +39,7 @@ export default function MenuPage() {
             servings={8}
             rating={4.6}
           />
-          <FoodCard 
+          <FoodCard
             title="Kare-Kare"
             description="Peanut stew with beef and vegetables"
             image="🥜"
@@ -45,7 +49,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.7}
           />
-          <FoodCard 
+          <FoodCard
             title="Lechon Kawali"
             description="Crispy fried pork belly"
             image="🥓"
@@ -55,7 +59,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.5}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Canton"
             description="Stir-fried noodles with vegetables and meat"
             image="🍜"
@@ -65,7 +69,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.4}
           />
-          <FoodCard 
+          <FoodCard
             title="Halo-Halo"
             description="Mixed dessert with shaved ice and sweet ingredients"
             image="🍧"
@@ -75,7 +79,7 @@ export default function MenuPage() {
             servings={2}
             rating={4.9}
           />
-          <FoodCard 
+          <FoodCard
             title="Tapsilog"
             description="Beef tapa with garlic rice and fried egg"
             image="🍳"
@@ -85,7 +89,7 @@ export default function MenuPage() {
             servings={2}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Longganisa"
             description="Sweet Filipino sausage with garlic rice"
             image="🌭"
@@ -95,7 +99,7 @@ export default function MenuPage() {
             servings={2}
             rating={4.2}
           />
-          <FoodCard 
+          <FoodCard
             title="Tocino"
             description="Sweet cured pork with garlic rice"
             image="🥩"
@@ -105,7 +109,7 @@ export default function MenuPage() {
             servings={2}
             rating={4.1}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Tinola"
             description="Ginger chicken soup with green papaya"
             image="🍲"
@@ -115,7 +119,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.4}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Caldereta"
             description="Spicy beef stew with tomato sauce"
             image="🥘"
@@ -125,7 +129,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.6}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Bihon"
             description="Rice noodles with vegetables and meat"
             image="🍝"
@@ -135,7 +139,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Lumpia"
             description="Fresh spring rolls with vegetables"
             image="🥬"
@@ -145,7 +149,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.5}
           />
-          <FoodCard 
+          <FoodCard
             title="Sisig"
             description="Sizzling pork dish with onions and chili"
             image="🔥"
@@ -155,7 +159,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.7}
           />
-          <FoodCard 
+          <FoodCard
             title="Bulalo"
             description="Beef marrow soup with corn and vegetables"
             image="🍖"
@@ -165,7 +169,7 @@ export default function MenuPage() {
             servings={8}
             rating={4.8}
           />
-          <FoodCard 
+          <FoodCard
             title="Bicol Express"
             description="Spicy pork with coconut milk and chili"
             image="🌶️"
@@ -175,7 +179,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.4}
           />
-          <FoodCard 
+          <FoodCard
             title="Dinuguan"
             description="Pork blood stew with vinegar"
             image="🩸"
@@ -185,7 +189,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.2}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Malabon"
             description="Thick rice noodles with seafood"
             image="🦐"
@@ -195,7 +199,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.5}
           />
-          <FoodCard 
+          <FoodCard
             title="Kare-Kareng Pata"
             description="Peanut stew with pork hock"
             image="🍖"
@@ -205,7 +209,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.6}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Arroz Caldo"
             description="Chicken rice porridge with ginger"
             image="🍚"
@@ -215,7 +219,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Ginisang Monggo"
             description="Mung bean soup with vegetables"
             image="🫘"
@@ -225,7 +229,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.1}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Palabok"
             description="Rice noodles with shrimp sauce"
             image="🍜"
@@ -235,7 +239,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.4}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Inasal"
             description="Grilled chicken marinated in calamansi"
             image="🍗"
@@ -245,7 +249,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.7}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Mechado"
             description="Beef stew with tomato sauce and vegetables"
             image="🥩"
@@ -255,7 +259,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.5}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Sotanghon"
             description="Glass noodles with chicken and vegetables"
             image="🍜"
@@ -265,7 +269,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.2}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Afritada"
             description="Chicken stew with tomato sauce and potatoes"
             image="🍗"
@@ -275,7 +279,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Tapa"
             description="Cured beef strips with garlic rice"
             image="🥩"
@@ -285,7 +289,7 @@ export default function MenuPage() {
             servings={2}
             rating={4.1}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Luglug"
             description="Thick rice noodles with shrimp sauce"
             image="🍜"
@@ -295,7 +299,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Menudo"
             description="Chicken stew with tomato sauce and vegetables"
             image="🍗"
@@ -305,7 +309,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.2}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Nilaga"
             description="Boiled beef with vegetables"
             image="🥩"
@@ -315,7 +319,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.4}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Canton Guisado"
             description="Stir-fried egg noodles with vegetables"
             image="🍜"
@@ -325,7 +329,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.1}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Sopas"
             description="Chicken macaroni soup with milk"
             image="🍲"
@@ -335,7 +339,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Pochero"
             description="Beef stew with banana and vegetables"
             image="🥩"
@@ -345,7 +349,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.5}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Habhab"
             description="Stir-fried rice noodles from Quezon"
             image="🍜"
@@ -355,7 +359,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.2}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Pastel"
             description="Chicken pie with vegetables and cream"
             image="🥧"
@@ -365,7 +369,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.4}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Estofado"
             description="Beef stew with sweet sauce and vegetables"
             image="🥩"
@@ -375,7 +379,7 @@ export default function MenuPage() {
             servings={6}
             rating={4.3}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Molo"
             description="Dumpling soup with ground pork"
             image="🥟"
@@ -385,7 +389,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.2}
           />
-          <FoodCard 
+          <FoodCard
             title="Chicken Relleno"
             description="Stuffed chicken with ground pork"
             image="🍗"
@@ -395,7 +399,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.6}
           />
-          <FoodCard 
+          <FoodCard
             title="Beef Morcon"
             description="Stuffed beef roll with vegetables"
             image="🥩"
@@ -405,7 +409,7 @@ export default function MenuPage() {
             servings={4}
             rating={4.5}
           />
-          <FoodCard 
+          <FoodCard
             title="Pancit Batil Patung"
             description="Egg noodles with carabao meat from Tuguegarao"
             image="🍜"
@@ -418,5 +422,5 @@ export default function MenuPage() {
         </div>
       </div>
     </main>
-  )
-} 
+  );
+}
