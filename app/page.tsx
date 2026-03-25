@@ -1,30 +1,30 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { ChefHat, Utensils } from 'lucide-react'
+import React from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ChefHat, Utensils } from "lucide-react";
 
 export default function HeroPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleMenuClick = () => {
-    router.push('/menu')
-  }
+    router.push("/menu");
+  };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
       style={{
-        backgroundImage: 'url(/cook.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundImage: "url(/cook.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40"></div>
-      
+
       {/* Content */}
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <motion.div
@@ -44,7 +44,7 @@ export default function HeroPage() {
 
           {/* Description */}
           <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto leading-relaxed">
-            Discover authentic Filipino recipes with step-by-step instructions, 
+            Discover authentic Filipino recipes with step-by-step instructions,
             cooking timers, and detailed nutrition information
           </p>
 
@@ -84,5 +84,5 @@ export default function HeroPage() {
         🍜
       </motion.div>
     </div>
-  )
-} 
+  );
+}

@@ -8,20 +8,23 @@
   }
   /* Dark mode transitions */
   * {
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease;
   }
-  
+
   /* Remove number input arrows/spinners on mobile */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-  
+
   input[type="number"] {
     -moz-appearance: textfield;
   }
-  
+
   /* Ensure proper scrolling on mobile */
   .card {
     overflow-y: auto;
@@ -52,19 +55,19 @@
   .landscape-compact {
     @apply py-2;
   }
-  
+
   .landscape-compact .card {
     @apply p-4;
   }
-  
+
   .landscape-compact h1 {
     @apply text-2xl;
   }
-  
+
   .landscape-compact h2 {
     @apply text-xl;
   }
-  
+
   .landscape-compact h3 {
     @apply text-lg;
   }
@@ -75,7 +78,7 @@
   .tablet-grid {
     @apply grid-cols-2;
   }
-  
+
   .tablet-text {
     @apply text-lg;
   }
@@ -86,7 +89,7 @@
   .desktop-grid {
     @apply grid-cols-3;
   }
-  
+
   .desktop-text {
     @apply text-xl;
   }
@@ -97,7 +100,7 @@
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
   }
-  
+
   .touch-spacing {
     @apply gap-4;
   }
@@ -118,7 +121,7 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .motion-safe\:animate-pulse {
     animation: none !important;
   }
@@ -129,8 +132,8 @@
   .no-print {
     display: none !important;
   }
-  
+
   .print-break {
     page-break-before: always;
   }
-} 
+}
