@@ -1,0 +1,4 @@
+
+## 2024-05-18 - [Accessible Interactive Grouping & Disabled States]
+**Learning:** When using framer-motion interactive elements, applying visual disabled states (e.g., `disabled:opacity-50 disabled:cursor-not-allowed`) must be accompanied by conditionally disabling motion properties like `whileHover` and `whileTap`. This prevents interactive tactile feedback on visually disabled buttons. Furthermore, grouped interactive elements like increment/decrement controllers should be associated with an `aria-labelledby` id on their parent text labels to provide clear context for screen readers.
+**Action:** When creating new components containing related increment/decrement inputs with disabled states, immediately enforce `aria-labelledby`, explicitly disable motion properties, and pair these with accessible `aria-live` spans to ensure real-time accessible feedback.
