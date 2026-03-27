@@ -1,0 +1,3 @@
+## 2024-05-20 - Adding Keyboard Support to Div Accordions
+**Learning:** In `CookingProgress.tsx`, accordion toggles for steps were implemented using `<div>` elements instead of semantic `<button>` elements. Adding just `aria-expanded` is insufficient for accessibility; full keyboard support (Tab to focus, Enter/Space to activate) must be polyfilled manually using `role="button"`, `tabIndex={0}`, and an `onKeyDown` handler.
+**Action:** When enhancing accessibility for non-semantic interactive elements (like divs acting as buttons), always check for and implement keyboard event handlers (`onKeyDown`) and focus management (`tabIndex={0}`) alongside ARIA attributes to ensure full screen reader and keyboard navigability.
