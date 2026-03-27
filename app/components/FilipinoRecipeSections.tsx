@@ -167,6 +167,8 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
           <button
             onClick={() => toggleSection(section.id)}
             className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300"
+            aria-expanded={expandedSection === section.id}
+            aria-controls={`section-${section.id}-content`}
           >
             <div className="flex items-center gap-3">
               <span className="text-cooking-600 dark:text-cooking-400 transition-colors duration-300">{section.icon}</span>
@@ -187,6 +189,7 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
           <AnimatePresence>
             {expandedSection === section.id && (
               <motion.div
+                id={`section-${section.id}-content`}
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
