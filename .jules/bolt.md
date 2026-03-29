@@ -1,0 +1,3 @@
+## 2024-05-24 - Optimize Membership Checks in Render Loops
+**Learning:** Membership checks (`.includes()`) within render loops (like when mapping over `steps` or conditionally showing icons based on state arrays) create an `O(N*M)` complexity trap.
+**Action:** When a component checks membership of an array inside a render loop, optimize it by deriving a `Set` from the source array once per render using `useMemo` (e.g. `const mySet = useMemo(() => new Set(arr), [arr])`), and replacing `.includes()` with `.has()`, converting the complexity to `O(N+M)`. Ensure the `useMemo` hook is placed strictly before any early returns to obey React Hook calling order rules.
