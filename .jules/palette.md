@@ -1,0 +1,3 @@
+## 2024-03-29 - Prevent tactile feedback on visually disabled Framer Motion elements
+**Learning:** Adding standard CSS `disabled:opacity-50 disabled:cursor-not-allowed` to `<motion.button>` elements visually disables them, but they still register tactile feedback animations (`whileHover`, `whileTap`) and remain technically interactive if not explicitly handled in the component logic.
+**Action:** When creating visually disabled states for `framer-motion` components, always conditionally disable the animation properties themselves (e.g., `whileHover={isDisabled ? {} : { scale: 1.05 }}`) to ensure the tactile experience matches the visual indication.
