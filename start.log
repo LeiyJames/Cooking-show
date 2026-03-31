@@ -1,0 +1,37 @@
+
+> cooking-timer-app@0.1.0 start /app
+> next start
+
+   ▲ Next.js 14.0.4
+   - Local:        http://localhost:3000
+
+ ✓ Ready in 520ms
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /filipino/adobo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /filipino/adobo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+getTimerState Debug: {
+  dishName: 'Chicken Adobo',
+  existingState: undefined,
+  finalState: {
+    timeLeft: 0,
+    isRunning: false,
+    inputMinutes: '0',
+    inputSeconds: '0',
+    timestamp: 1774930606125
+  },
+  allTimers: []
+}
+TimerInterface Debug: {
+  dishName: 'Chicken Adobo',
+  timerState: {
+    timeLeft: 0,
+    isRunning: false,
+    inputMinutes: '0',
+    inputSeconds: '0',
+    timestamp: 1774930606125
+  },
+  currentRunningDish: null,
+  displayMinutes: '0',
+  displaySeconds: '0'
+}
