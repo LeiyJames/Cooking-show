@@ -42,16 +42,15 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
         const timersData = JSON.parse(savedTimers)
         
         // Check if data is corrupted or has invalid values
-        let hasCorruptedData = false
-        Object.keys(timersData).forEach(dishName => {
+        // ⚡ Bolt Optimization: Use .some() instead of .forEach() to enable early return (short-circuiting).
+        // This avoids iterating through the entire object if corruption is found early.
+        const hasCorruptedData = Object.keys(timersData).some(dishName => {
           const timer = timersData[dishName]
-          if (isNaN(timer.timeLeft) || 
+          return isNaN(timer.timeLeft) ||
               typeof timer.inputMinutes !== 'string' || 
               typeof timer.inputSeconds !== 'string' ||
               timer.inputMinutes === '' ||
-              timer.inputSeconds === '') {
-            hasCorruptedData = true
-          }
+              timer.inputSeconds === ''
         })
         
         if (hasCorruptedData) {
