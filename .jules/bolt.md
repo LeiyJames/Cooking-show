@@ -1,0 +1,3 @@
+## 2024-04-02 - Eliminate Double Renders by Computing Derived State with useMemo
+**Learning:** Derived state in React components should be calculated during the render phase. In the `IngredientCalculator` component, calculating `scaledIngredients` via a `useEffect` hook and storing it in local `useState` caused an unnecessary re-render every time the servings count changed. This is a common performance anti-pattern.
+**Action:** Replace `useEffect` and `useState` for derived state with `useMemo` to compute the state synchronously during render. This applies to any calculations that only depend on existing props and state. Ensure this is checked in any new components handling complex calculations.
