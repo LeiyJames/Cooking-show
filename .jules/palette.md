@@ -1,0 +1,3 @@
+## 2024-04-02 - Polyfilling generic HTML elements for Keyboard Accessibility
+**Learning:** Generic block elements like `<div>` that act as accordions or buttons lack inherent keyboard accessibility, ignoring tab focus and keypress events ('Enter', 'Space') which renders them unusable for keyboard navigation users.
+**Action:** When applying `onClick` to non-interactive elements, always add `role="button"`, `tabIndex={0}`, an `onKeyDown` handler that executes on 'Enter' and 'Space', and `aria-expanded`/`aria-controls` for proper screen reader interaction. Ensure there is also a visual focus ring (`focus-visible:ring-2`).
