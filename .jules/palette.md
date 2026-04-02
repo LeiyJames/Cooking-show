@@ -1,0 +1,3 @@
+## 2024-05-18 - Keyboard Accessible Accordion Toggles
+**Learning:** Interactive UI elements that use generic tags like `<div>` for `onClick` handlers are inherently inaccessible to keyboard and screen-reader users, violating WCAG standards. This pattern is common in custom implementations like step accordions.
+**Action:** When implementing custom interactive elements like accordions or toggles without semantic `<button>` tags, always polyfill the missing behavior by explicitly providing `role="button"`, `tabIndex={0}`, standard `aria-expanded` / `aria-controls` bindings to the content `id`, an `onKeyDown` listener that catches "Enter" and " " (Space) keys, and visible focus indicators (`focus-visible:ring-2`).
