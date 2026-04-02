@@ -1,98 +1,106 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { Calculator, Plus, Minus, RotateCcw } from 'lucide-react'
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { motion } from "framer-motion";
+import { Calculator, Plus, Minus, RotateCcw } from "lucide-react";
 
 interface Ingredient {
-  name: string
-  amount: number
-  unit: string
+  name: string;
+  amount: number;
+  unit: string;
 }
 
 interface IngredientCalculatorProps {
-  ingredients: Ingredient[]
-  originalServings: number
-  dishName?: string
+  ingredients: Ingredient[];
+  originalServings: number;
+  dishName?: string;
 }
 
-export default function IngredientCalculator({ ingredients, originalServings, dishName = 'recipe' }: IngredientCalculatorProps) {
-  const [servings, setServings] = useState(originalServings)
-  const [scaledIngredients, setScaledIngredients] = useState<Ingredient[]>(ingredients)
-  const [isInitialized, setIsInitialized] = useState(false)
+export default function IngredientCalculator({
+  ingredients,
+  originalServings,
+  dishName = "recipe",
+}: IngredientCalculatorProps) {
+  const [servings, setServings] = useState(originalServings);
+  const [scaledIngredients, setScaledIngredients] =
+    useState<Ingredient[]>(ingredients);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Generate unique key for this calculator instance
-  const calculatorKey = `calculator_${dishName}`
+  const calculatorKey = `calculator_${dishName}`;
 
   // Load saved servings from localStorage
   useEffect(() => {
-    const savedCalculator = localStorage.getItem(calculatorKey)
+    const savedCalculator = localStorage.getItem(calculatorKey);
     if (savedCalculator) {
       try {
-        const state = JSON.parse(savedCalculator)
-        setServings(state.servings || originalServings)
+        const state = JSON.parse(savedCalculator);
+        setServings(state.servings || originalServings);
       } catch (error) {
-        console.error('Error loading calculator state:', error)
+        console.error("Error loading calculator state:", error);
       }
     }
-    setIsInitialized(true)
-  }, [calculatorKey, originalServings])
+    setIsInitialized(true);
+  }, [calculatorKey, originalServings]);
 
   // Save servings to localStorage whenever it changes (debounced)
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const saveCalculatorState = useCallback(() => {
     if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current)
+      clearTimeout(saveTimeoutRef.current);
     }
     saveTimeoutRef.current = setTimeout(() => {
       const calculatorState = {
         servings,
-        timestamp: Date.now()
-      }
-      localStorage.setItem(calculatorKey, JSON.stringify(calculatorState))
-    }, 500) // Debounce saves by 500ms
-  }, [servings, calculatorKey])
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(calculatorKey, JSON.stringify(calculatorState));
+    }, 500); // Debounce saves by 500ms
+  }, [servings, calculatorKey]);
 
   useEffect(() => {
     if (isInitialized) {
-      saveCalculatorState()
+      saveCalculatorState();
     }
-  }, [saveCalculatorState, isInitialized])
+  }, [saveCalculatorState, isInitialized]);
 
   useEffect(() => {
-    const scale = servings / originalServings
-    const scaled = ingredients.map(ingredient => ({
+    const scale = servings / originalServings;
+    const scaled = ingredients.map((ingredient) => ({
       ...ingredient,
-      amount: Math.round((ingredient.amount * scale) * 100) / 100
-    }))
-    setScaledIngredients(scaled)
-  }, [servings, originalServings, ingredients])
+      amount: Math.round(ingredient.amount * scale * 100) / 100,
+    }));
+    setScaledIngredients(scaled);
+  }, [servings, originalServings, ingredients]);
 
   const adjustServings = (increment: number) => {
-    const newServings = Math.max(1, servings + increment)
-    setServings(newServings)
-  }
+    const newServings = Math.max(1, servings + increment);
+    setServings(newServings);
+  };
 
   const resetServings = () => {
-    setServings(originalServings)
-    localStorage.removeItem(calculatorKey)
-  }
+    setServings(originalServings);
+    localStorage.removeItem(calculatorKey);
+  };
 
   const formatAmount = (amount: number) => {
     if (amount === Math.floor(amount)) {
-      return amount.toString()
+      return amount.toString();
     }
-    return amount.toFixed(2).replace(/\.?0+$/, '')
-  }
+    return amount.toFixed(2).replace(/\.?0+$/, "");
+  };
 
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
+        clearTimeout(saveTimeoutRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
+
+  const servingsId = React.useId();
+  const isResetDisabled = servings === originalServings;
 
   return (
     <motion.div
@@ -109,7 +117,10 @@ export default function IngredientCalculator({ ingredients, originalServings, di
         </div>
         <button
           onClick={resetServings}
-          className="text-sm text-cooking-600 dark:text-cooking-400 hover:text-cooking-700 dark:hover:text-cooking-300 transition-colors duration-300"
+          disabled={isResetDisabled}
+          aria-label="Reset servings"
+          title="Reset servings"
+          className="text-sm text-cooking-600 dark:text-cooking-400 hover:text-cooking-700 dark:hover:text-cooking-300 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Reset
         </button>
@@ -119,26 +130,41 @@ export default function IngredientCalculator({ ingredients, originalServings, di
       <div className="bg-gradient-to-r from-cooking-50 to-warm-50 dark:from-cooking-900/20 dark:to-warm-900/20 rounded-xl p-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="text-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+            <label
+              id={servingsId}
+              className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block"
+            >
               Servings
             </label>
-            <div className="flex items-center gap-3">
+            <div
+              role="group"
+              aria-labelledby={servingsId}
+              className="flex items-center gap-3"
+            >
               <motion.button
                 onClick={() => adjustServings(-1)}
-                className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                aria-label="Decrease servings"
+                title="Decrease servings"
+                className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={servings <= 1 ? {} : { scale: 1.05 }}
+                whileTap={servings <= 1 ? {} : { scale: 0.95 }}
                 disabled={servings <= 1}
               >
                 <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </motion.button>
-              
-              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center">
+
+              <span
+                className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center"
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 {servings}
               </span>
-              
+
               <motion.button
                 onClick={() => adjustServings(1)}
+                aria-label="Increase servings"
+                title="Increase servings"
                 className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -147,21 +173,25 @@ export default function IngredientCalculator({ ingredients, originalServings, di
               </motion.button>
             </div>
           </div>
-          
+
           <motion.button
             onClick={resetServings}
-            className="p-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-200"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            disabled={isResetDisabled}
+            aria-label="Reset servings"
+            title="Reset servings"
+            className="p-2 bg-cooking-100 dark:bg-cooking-900/30 text-cooking-700 dark:text-cooking-300 rounded-lg hover:bg-cooking-200 dark:hover:bg-cooking-900/50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            whileHover={isResetDisabled ? {} : { scale: 1.05 }}
+            whileTap={isResetDisabled ? {} : { scale: 0.95 }}
           >
             <RotateCcw className="w-4 h-4" />
           </motion.button>
         </div>
-        
+
         <div className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
           {servings !== originalServings && (
             <span className="text-cooking-600 dark:text-cooking-400">
-              {servings > originalServings ? '+' : ''}{servings - originalServings} from original
+              {servings > originalServings ? "+" : ""}
+              {servings - originalServings} from original
             </span>
           )}
         </div>
@@ -170,9 +200,9 @@ export default function IngredientCalculator({ ingredients, originalServings, di
       {/* Scaled Ingredients List */}
       <div className="space-y-3">
         <h4 className="font-semibold text-gray-800 dark:text-gray-100 transition-colors duration-300">
-          Ingredients for {servings} {servings === 1 ? 'serving' : 'servings'}:
+          Ingredients for {servings} {servings === 1 ? "serving" : "servings"}:
         </h4>
-        
+
         <div className="space-y-2">
           {scaledIngredients.map((ingredient, index) => (
             <motion.div
@@ -196,10 +226,11 @@ export default function IngredientCalculator({ ingredients, originalServings, di
       {/* Tips */}
       <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <p className="text-xs text-blue-800 dark:text-blue-200">
-          💡 <strong>Tip:</strong> Adjust the number of servings to scale the recipe. 
-          All ingredient amounts will be automatically calculated for you!
+          💡 <strong>Tip:</strong> Adjust the number of servings to scale the
+          recipe. All ingredient amounts will be automatically calculated for
+          you!
         </p>
       </div>
     </motion.div>
-  )
-} 
+  );
+}
