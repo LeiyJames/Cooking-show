@@ -1,0 +1,3 @@
+## 2026-04-02 - Fully polyfilling generic interactive elements
+**Learning:** When using generic `<div>` tags for interactive elements like accordion toggles (e.g., in `CookingProgress.tsx`), they are not inherently keyboard accessible. Screen readers and keyboard users cannot interact with them.
+**Action:** Fully polyfill these elements by adding `role="button"`, `tabIndex={0}`, an `onKeyDown` handler to listen for "Enter" and "Space" keys (using `e.preventDefault()` to prevent scrolling), and proper ARIA attributes (`aria-expanded`, `aria-controls`). Also ensure there are visible focus styles (e.g., `focus-visible:ring-2`). Alternatively, use semantic `<button>` elements when possible to get this behavior for free.
