@@ -1,0 +1,3 @@
+## 2025-04-03 - Grouped Interactive Controls Accessibility
+**Learning:** Increment/decrement button sets (like in IngredientCalculator) need `role="group"` and `aria-labelledby` linked to the visual label using `React.useId()`. The dynamic value spanning between them must have `aria-live="polite"` and `aria-atomic="true"` so screen readers announce real-time scaling without requiring focus on the value itself.
+**Action:** When implementing custom number inputs or scaled value controls, always wrap the controls in a `role="group"`, bind the label with `useId`, and ensure the dynamic text node announces changes via `aria-live`.
