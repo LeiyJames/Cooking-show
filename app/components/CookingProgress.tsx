@@ -187,8 +187,18 @@ export default function CookingProgress({
               }`}
             >
               <div 
-                className="flex items-center gap-3 cursor-pointer"
+                className="flex items-center gap-3 cursor-pointer focus-visible:ring-2 focus-visible:ring-cooking-500 focus-visible:outline-none rounded-lg"
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-controls={`step-content-${step.id}`}
                 onClick={() => setExpandedStep(isExpanded ? null : step.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setExpandedStep(isExpanded ? null : step.id)
+                  }
+                }}
               >
                 <div className="flex-shrink-0">
                   {getStepIcon(step)}
@@ -229,6 +239,7 @@ export default function CookingProgress({
               <AnimatePresence>
                 {isExpanded && (
                   <motion.div
+                    id={`step-content-${step.id}`}
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
