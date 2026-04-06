@@ -1,0 +1,3 @@
+## 2024-05-18 - [Dynamic Grouped Controls & Icon Buttons]
+**Learning:** React component icon-only buttons in dynamic settings (like numeric calculators) can lead to ambiguous focus tracking and unlabeled interactions for screen readers when the dynamic value acts as visual but not semantic feedback.
+**Action:** Always wrap grouped increment/decrement controls in a `role="group"` element linking back to their visual label using `aria-labelledby`, explicitly label all interactive buttons with `aria-label` and `title` tooltips, and utilize `aria-live="polite"` on the dynamically changing target text to ensure semantic, seamless accessibility.
