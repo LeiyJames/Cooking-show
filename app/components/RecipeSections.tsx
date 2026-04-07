@@ -1,65 +1,80 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ChevronDown,
+  ChevronUp,
+  Utensils,
+  List,
+  Lightbulb,
+  FileText,
+} from "lucide-react";
 
 interface Section {
-  id: string
-  title: string
-  icon: React.ReactNode
-  content: React.ReactNode
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  content: React.ReactNode;
 }
 
 export default function RecipeSections() {
-  const [expandedSection, setExpandedSection] = useState<string | null>('ingredients')
-  const [notes, setNotes] = useState('')
+  const [expandedSection, setExpandedSection] = useState<string | null>(
+    "ingredients",
+  );
+  const [notes, setNotes] = useState("");
   const [ingredients, setIngredients] = useState([
-    '2 cups all-purpose flour',
-    '1 cup warm water',
-    '1 tsp active dry yeast',
-    '1 tsp salt',
-    '2 tbsp olive oil'
-  ])
+    "2 cups all-purpose flour",
+    "1 cup warm water",
+    "1 tsp active dry yeast",
+    "1 tsp salt",
+    "2 tbsp olive oil",
+  ]);
   const [steps, setSteps] = useState([
-    'Mix flour, yeast, and salt in a large bowl',
-    'Add warm water and olive oil, mix until dough forms',
-    'Knead dough for 10 minutes until smooth',
-    'Let rise in a warm place for 1 hour',
-    'Shape and bake at 450°F for 20-25 minutes'
-  ])
+    "Mix flour, yeast, and salt in a large bowl",
+    "Add warm water and olive oil, mix until dough forms",
+    "Knead dough for 10 minutes until smooth",
+    "Let rise in a warm place for 1 hour",
+    "Shape and bake at 450°F for 20-25 minutes",
+  ]);
   const [tips, setTips] = useState([
-    'Use warm (not hot) water to activate the yeast properly',
-    'Let the dough rise in a warm, draft-free area for best results'
-  ])
+    "Use warm (not hot) water to activate the yeast properly",
+    "Let the dough rise in a warm, draft-free area for best results",
+  ]);
 
   // Load saved data from localStorage
   useEffect(() => {
-    const savedNotes = localStorage.getItem('cookingNotes')
-    const savedIngredients = localStorage.getItem('cookingIngredients')
-    const savedSteps = localStorage.getItem('cookingSteps')
-    const savedTips = localStorage.getItem('cookingTips')
+    const savedNotes = localStorage.getItem("cookingNotes");
+    const savedIngredients = localStorage.getItem("cookingIngredients");
+    const savedSteps = localStorage.getItem("cookingSteps");
+    const savedTips = localStorage.getItem("cookingTips");
 
-    if (savedNotes) setNotes(savedNotes)
-    if (savedIngredients) setIngredients(JSON.parse(savedIngredients))
-    if (savedSteps) setSteps(JSON.parse(savedSteps))
-    if (savedTips) setTips(JSON.parse(savedTips))
-  }, [])
+    if (savedNotes) setNotes(savedNotes);
+    if (savedIngredients) setIngredients(JSON.parse(savedIngredients));
+    if (savedSteps) setSteps(JSON.parse(savedSteps));
+    if (savedTips) setTips(JSON.parse(savedTips));
+  }, []);
 
-  // Save notes to localStorage
-  const handleNotesChange = (value: string) => {
-    setNotes(value)
-    localStorage.setItem('cookingNotes', value)
-  }
+  // Debounce save notes to localStorage
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const handleNotesChange = useCallback((value: string) => {
+    setNotes(value);
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      localStorage.setItem("cookingNotes", value);
+    }, 500);
+  }, []);
 
   const toggleSection = (sectionId: string) => {
-    setExpandedSection(expandedSection === sectionId ? null : sectionId)
-  }
+    setExpandedSection(expandedSection === sectionId ? null : sectionId);
+  };
 
   const sections: Section[] = [
     {
-      id: 'ingredients',
-      title: 'Ingredients',
+      id: "ingredients",
+      title: "Ingredients",
       icon: <Utensils className="w-5 h-5" />,
       content: (
         <ul className="space-y-2">
@@ -76,11 +91,11 @@ export default function RecipeSections() {
             </motion.li>
           ))}
         </ul>
-      )
+      ),
     },
     {
-      id: 'steps',
-      title: 'Steps',
+      id: "steps",
+      title: "Steps",
       icon: <List className="w-5 h-5" />,
       content: (
         <ol className="space-y-4">
@@ -99,11 +114,11 @@ export default function RecipeSections() {
             </motion.li>
           ))}
         </ol>
-      )
+      ),
     },
     {
-      id: 'tips',
-      title: 'Tips',
+      id: "tips",
+      title: "Tips",
       icon: <Lightbulb className="w-5 h-5" />,
       content: (
         <div className="space-y-3">
@@ -119,11 +134,11 @@ export default function RecipeSections() {
             </motion.div>
           ))}
         </div>
-      )
+      ),
     },
     {
-      id: 'notes',
-      title: 'Notes',
+      id: "notes",
+      title: "Notes",
       icon: <FileText className="w-5 h-5" />,
       content: (
         <textarea
@@ -132,9 +147,9 @@ export default function RecipeSections() {
           placeholder="Add your cooking notes here..."
           className="w-full h-32 p-3 border-2 border-gray-200 rounded-xl focus:border-cooking-500 focus:outline-none resize-none"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <motion.div
@@ -156,7 +171,9 @@ export default function RecipeSections() {
           >
             <div className="flex items-center gap-3">
               <span className="text-cooking-600">{section.icon}</span>
-              <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                {section.title}
+              </h3>
             </div>
             <motion.div
               animate={{ rotate: expandedSection === section.id ? 180 : 0 }}
@@ -174,19 +191,17 @@ export default function RecipeSections() {
             {expandedSection === section.id && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
+                animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <div className="px-4 pb-4 pt-2">
-                  {section.content}
-                </div>
+                <div className="px-4 pb-4 pt-2">{section.content}</div>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       ))}
     </motion.div>
-  )
-} 
+  );
+}
