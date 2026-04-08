@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessible Grouped Controls & Live Regions
+**Learning:** In reusable form components like `IngredientCalculator`, dynamically changing numbers (like servings) are not announced by screen readers when updated via button clicks. Additionally, independent icon-only buttons (`+` and `-`) lack context without a visual label association.
+**Action:** Always wrap interactive increment/decrement buttons in a container with `role="group"` and `aria-labelledby` pointing to the main label via `React.useId()`. Add `aria-live="polite"` and `aria-atomic="true"` to the dynamic text element to ensure changes are announced correctly, alongside standard `aria-label` and visual `disabled` states for icon buttons.
