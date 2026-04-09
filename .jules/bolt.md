@@ -1,0 +1,3 @@
+## 2024-04-09 - Debounce synchronous localStorage writes in React handlers
+**Learning:** Calling `localStorage.setItem` synchronously inside frequent event handlers (like text `<textarea>` `onChange` events) blocks the React main thread. The project's other components (`IngredientCalculator`, `CookingProgress`, `TimerContext`) already handle debouncing, but `RecipeSections` and `FilipinoRecipeSections` missed this, causing UI lag when typing long notes.
+**Action:** Always wrap `localStorage.setItem` inside rapid, continuous event listeners in a `setTimeout` debouncer (using `useRef` to maintain the timeout ID and clean up on unmount) rather than invoking it synchronously.
