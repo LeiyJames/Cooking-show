@@ -1,0 +1,3 @@
+## 2024-06-25 - Polyfilling Generic Divs for Accessibility
+**Learning:** When interactive elements like accordion toggles are implemented using generic `<div>` tags (e.g., step toggles in `CookingProgress.tsx`), they must be fully polyfilled for keyboard accessibility by adding `role="button"`, `tabIndex={0}`, and an `onKeyDown` handler to listen for 'Enter' and ' ' (Space) keys, in addition to standard `aria-expanded` and `aria-controls` attributes.
+**Action:** Always ensure generic div toggles receive the full suite of keyboard interaction polyfills and aria attributes linked to the `id` of their expandable region to make them navigable and operable for keyboard and screen reader users.
