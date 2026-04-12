@@ -1,0 +1,3 @@
+## 2024-04-12 - Polyfilling generic element accordion toggles
+**Learning:** Using generic HTML elements like `<div>` for interactive components (such as the step toggles in `CookingProgress.tsx`) severely limits accessibility for keyboard and screen reader users as they lack semantic meaning and innate interactive behaviors.
+**Action:** When a generic element must be used as an interactive control (like an accordion toggle), always polyfill it by adding `role="button"`, `tabIndex={0}`, standard ARIA states (`aria-expanded`, `aria-controls`), a keyboard handler (`onKeyDown`) listening for 'Enter' and 'Space', and visible focus states (e.g., `focus-visible:ring`).
