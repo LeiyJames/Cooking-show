@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -51,10 +51,28 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
     if (savedTips) setTips(JSON.parse(savedTips))
   }, [dish.title])
 
-  // Save notes to localStorage
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Save notes to localStorage with debounce
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem(`cookingNotes_${dish.title}`, value)
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    }, 500)
   }
 
   const toggleSection = (sectionId: string) => {
