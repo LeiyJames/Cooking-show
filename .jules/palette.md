@@ -1,0 +1,3 @@
+## 2024-04-15 - Missing ARIA Labels and Disabled States on Calculator Component
+**Learning:** Icon-only control groups (like increment/decrement buttons) in interactive components often lack proper ARIA labels, tooltips (`title`), and group roles (`role="group"`). Additionally, disabled buttons lacking visual feedback (`disabled:opacity-50 disabled:cursor-not-allowed`) create confusion for users.
+**Action:** When auditing custom numerical inputs or calculators, always ensure icon-only buttons have descriptive `aria-label` and `title` attributes, group them semantically with `role="group"`, and explicitly define disabled styling for boundary conditions.
