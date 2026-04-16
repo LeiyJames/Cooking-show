@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, Circle, Clock, ChefHat } from 'lucide-react'
 
@@ -14,69 +14,21 @@ interface CookingStep {
 interface CookingProgressProps {
   steps: CookingStep[]
   currentStep: number
+  completedSteps: number[]
   onStepComplete: (stepId: number) => void
   onStepSelect: (stepId: number) => void
-  dishName?: string
+  onReset?: () => void
 }
 
 export default function CookingProgress({ 
   steps, 
   currentStep, 
+  completedSteps,
   onStepComplete, 
   onStepSelect,
-  dishName = 'recipe'
+  onReset
 }: CookingProgressProps) {
   const [expandedStep, setExpandedStep] = useState<number | null>(null)
-  const [completedSteps, setCompletedSteps] = useState<number[]>([])
-  const [localCurrentStep, setLocalCurrentStep] = useState(currentStep)
-  const [isInitialized, setIsInitialized] = useState(false)
-
-  // Generate unique key for this progress instance
-  const progressKey = `progress_${dishName}`
-
-  // Load saved progress state from localStorage
-  useEffect(() => {
-    const savedProgress = localStorage.getItem(progressKey)
-    if (savedProgress) {
-      try {
-        const state = JSON.parse(savedProgress)
-        setCompletedSteps(state.completedSteps || [])
-        setLocalCurrentStep(state.currentStep || 1)
-      } catch (error) {
-        console.error('Error loading progress state:', error)
-      }
-    }
-    setIsInitialized(true)
-  }, [progressKey])
-
-  // Save progress state to localStorage whenever it changes (debounced)
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
-  const saveProgressState = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current)
-    }
-    saveTimeoutRef.current = setTimeout(() => {
-      const progressState = {
-        completedSteps,
-        currentStep: localCurrentStep,
-        timestamp: Date.now()
-      }
-      localStorage.setItem(progressKey, JSON.stringify(progressState))
-    }, 500) // Debounce saves by 500ms
-  }, [completedSteps, localCurrentStep, progressKey])
-
-  useEffect(() => {
-    if (isInitialized) {
-      saveProgressState()
-    }
-  }, [saveProgressState, isInitialized])
-
-  // Update local state when props change
-  useEffect(() => {
-    if (isInitialized) {
-      setLocalCurrentStep(currentStep)
-    }
-  }, [currentStep, isInitialized])
 
   const completedStepsCount = completedSteps.length
   const progressPercentage = (completedStepsCount / steps.length) * 100
@@ -85,7 +37,7 @@ export default function CookingProgress({
     if (completedSteps.includes(step.id)) {
       return <CheckCircle className="w-5 h-5 text-green-500" />
     }
-    if (step.id === localCurrentStep) {
+    if (step.id === currentStep) {
       return <ChefHat className="w-5 h-5 text-cooking-500 animate-pulse" />
     }
     return <Circle className="w-5 h-5 text-gray-400" />
@@ -93,36 +45,9 @@ export default function CookingProgress({
 
   const getStepStatus = (step: CookingStep) => {
     if (completedSteps.includes(step.id)) return 'completed'
-    if (step.id === localCurrentStep) return 'current'
+    if (step.id === currentStep) return 'current'
     return 'pending'
   }
-
-  const handleStepComplete = (stepId: number) => {
-    const newCompletedSteps = [...completedSteps, stepId]
-    setCompletedSteps(newCompletedSteps)
-    setLocalCurrentStep(Math.min(localCurrentStep + 1, steps.length))
-    onStepComplete(stepId)
-  }
-
-  const handleStepSelect = (stepId: number) => {
-    setLocalCurrentStep(stepId)
-    onStepSelect(stepId)
-  }
-
-  const resetProgress = () => {
-    setCompletedSteps([])
-    setLocalCurrentStep(1)
-    localStorage.removeItem(progressKey)
-  }
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-    }
-  }, [])
 
   return (
     <motion.div
@@ -137,19 +62,21 @@ export default function CookingProgress({
             Cooking Progress
           </h3>
         </div>
-        <button
-          onClick={resetProgress}
-          className="text-sm text-cooking-600 dark:text-cooking-400 hover:text-cooking-700 dark:hover:text-cooking-300 transition-colors duration-300"
-        >
-          Reset
-        </button>
+        {onReset && (
+          <button
+            onClick={onReset}
+            className="text-sm text-cooking-600 dark:text-cooking-400 hover:text-cooking-700 dark:hover:text-cooking-300 transition-colors duration-300"
+          >
+            Reset
+          </button>
+        )}
       </div>
 
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-            Step {localCurrentStep} of {steps.length}
+            Step {currentStep} of {steps.length}
           </span>
           <span className="text-sm font-medium text-cooking-600 dark:text-cooking-400">
             {Math.round(progressPercentage)}% Complete
@@ -238,7 +165,7 @@ export default function CookingProgress({
                     <div className="flex gap-2">
                       {!completedSteps.includes(step.id) && (
                         <motion.button
-                          onClick={() => handleStepComplete(step.id)}
+                          onClick={() => onStepComplete(step.id)}
                           className="px-3 py-1 bg-cooking-500 hover:bg-cooking-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
@@ -249,7 +176,7 @@ export default function CookingProgress({
                       
                       {completedSteps.includes(step.id) && (
                         <motion.button
-                          onClick={() => handleStepSelect(step.id)}
+                          onClick={() => onStepSelect(step.id)}
                           className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
@@ -290,4 +217,4 @@ export default function CookingProgress({
       </div>
     </motion.div>
   )
-} 
+}
