@@ -44,8 +44,10 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
   const displaySeconds = (timerState.inputSeconds && timerState.inputSeconds !== '') ? timerState.inputSeconds : '0'
 
   // Additional validation to prevent NaN
-  const validatedMinutes = isNaN(parseInt(displayMinutes)) ? '0' : displayMinutes
-  const validatedSeconds = isNaN(parseInt(displaySeconds)) ? '0' : displaySeconds
+  const { validatedMinutes, validatedSeconds } = React.useMemo(() => ({
+    validatedMinutes: isNaN(parseInt(displayMinutes)) ? '0' : displayMinutes,
+    validatedSeconds: isNaN(parseInt(displaySeconds)) ? '0' : displaySeconds
+  }), [displayMinutes, displaySeconds])
 
   const handleStartTimer = () => {
     const minutes = parseInt(validatedMinutes) || 0
