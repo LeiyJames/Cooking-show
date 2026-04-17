@@ -18,7 +18,6 @@ interface IngredientCalculatorProps {
 
 export default function IngredientCalculator({ ingredients, originalServings, dishName = 'recipe' }: IngredientCalculatorProps) {
   const [servings, setServings] = useState(originalServings)
-  const [scaledIngredients, setScaledIngredients] = useState<Ingredient[]>(ingredients)
   const [isInitialized, setIsInitialized] = useState(false)
 
   // Generate unique key for this calculator instance
@@ -59,14 +58,11 @@ export default function IngredientCalculator({ ingredients, originalServings, di
     }
   }, [saveCalculatorState, isInitialized])
 
-  useEffect(() => {
-    const scale = servings / originalServings
-    const scaled = ingredients.map(ingredient => ({
-      ...ingredient,
-      amount: Math.round((ingredient.amount * scale) * 100) / 100
-    }))
-    setScaledIngredients(scaled)
-  }, [servings, originalServings, ingredients])
+  const scale = servings / originalServings
+  const scaledIngredients = ingredients.map(ingredient => ({
+    ...ingredient,
+    amount: Math.round((ingredient.amount * scale) * 100) / 100
+  }))
 
   const adjustServings = (increment: number) => {
     const newServings = Math.max(1, servings + increment)
