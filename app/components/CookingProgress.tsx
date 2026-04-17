@@ -18,6 +18,7 @@ interface CookingProgressProps {
   onStepComplete: (stepId: number) => void
   onStepSelect: (stepId: number) => void
   onReset?: () => void
+  dishName?: string
 }
 
 export default function CookingProgress({ 
