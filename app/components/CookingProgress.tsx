@@ -20,11 +20,11 @@ interface CookingProgressProps {
   onReset?: () => void
 }
 
-export default function CookingProgress({ 
-  steps, 
-  currentStep, 
+export default function CookingProgress({
+  steps,
+  currentStep,
   completedSteps,
-  onStepComplete, 
+  onStepComplete,
   onStepSelect,
   onReset
 }: CookingProgressProps) {
@@ -82,7 +82,7 @@ export default function CookingProgress({
             {Math.round(progressPercentage)}% Complete
           </span>
         </div>
-        
+
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
           <motion.div
             className="bg-gradient-to-r from-cooking-500 to-cooking-600 h-full rounded-full"
@@ -98,7 +98,7 @@ export default function CookingProgress({
         {steps.map((step, index) => {
           const status = getStepStatus(step)
           const isExpanded = expandedStep === step.id
-          
+
           return (
             <motion.div
               key={step.id}
@@ -106,26 +106,36 @@ export default function CookingProgress({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               className={`border rounded-lg p-4 transition-all duration-300 ${
-                status === 'completed' 
-                  ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20' 
+                status === 'completed'
+                  ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
                   : status === 'current'
                   ? 'border-cooking-200 bg-cooking-50 dark:border-cooking-800 dark:bg-cooking-900/20'
                   : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50'
               }`}
             >
-              <div 
+              <div
                 className="flex items-center gap-3 cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-controls={`step-content-${step.id}`}
                 onClick={() => setExpandedStep(isExpanded ? null : step.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setExpandedStep(isExpanded ? null : step.id)
+                  }
+                }}
               >
                 <div className="flex-shrink-0">
                   {getStepIcon(step)}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <h4 className={`font-medium transition-colors duration-300 ${
-                      status === 'completed' 
-                        ? 'text-green-700 dark:text-green-300 line-through' 
+                      status === 'completed'
+                        ? 'text-green-700 dark:text-green-300 line-through'
                         : status === 'current'
                         ? 'text-cooking-700 dark:text-cooking-300'
                         : 'text-gray-700 dark:text-gray-300'
@@ -139,10 +149,10 @@ export default function CookingProgress({
                       </span>
                     </div>
                   </div>
-                  
+
                   <p className={`text-sm mt-1 transition-colors duration-300 ${
-                    status === 'completed' 
-                      ? 'text-green-600 dark:text-green-400' 
+                    status === 'completed'
+                      ? 'text-green-600 dark:text-green-400'
                       : status === 'current'
                       ? 'text-cooking-600 dark:text-cooking-400'
                       : 'text-gray-600 dark:text-gray-400'
@@ -156,6 +166,7 @@ export default function CookingProgress({
               <AnimatePresence>
                 {isExpanded && (
                   <motion.div
+                    id={`step-content-${step.id}`}
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -173,7 +184,7 @@ export default function CookingProgress({
                           Mark Complete
                         </motion.button>
                       )}
-                      
+
                       {completedSteps.includes(step.id) && (
                         <motion.button
                           onClick={() => onStepSelect(step.id)}
@@ -204,7 +215,7 @@ export default function CookingProgress({
               {steps.length - completedStepsCount} step{steps.length - completedStepsCount !== 1 ? 's' : ''} remaining
             </p>
           </div>
-          
+
           <div className="text-right">
             <div className="text-2xl font-bold text-cooking-600 dark:text-cooking-400">
               {completedStepsCount}/{steps.length}
