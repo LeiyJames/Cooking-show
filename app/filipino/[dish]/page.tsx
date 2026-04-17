@@ -113,8 +113,7 @@ export default function FilipinoDishPage() {
             <TouchGestures onSwipeLeft={handleSwipeLeft} onSwipeRight={handleSwipeRight}>
               <TimerInterface
                 recommendedMinutes={dish.recommendedMinutes}
-                dishName={dish.title}
-              />
+                />
             </TouchGestures>
 
             {/* Cooking Progress */}
@@ -125,7 +124,6 @@ export default function FilipinoDishPage() {
               onStepComplete={handleStepComplete}
               onStepSelect={handleStepSelect}
               onReset={resetProgress}
-              dishName={dish.title}
             />
 
             {/* Ingredient Calculator */}
