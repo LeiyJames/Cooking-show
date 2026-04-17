@@ -18,6 +18,7 @@ interface CookingProgressProps {
   onStepComplete: (stepId: number) => void
   onStepSelect: (stepId: number) => void
   onReset?: () => void
+  dishName?: string
 }
 
 export default function CookingProgress({ 
@@ -26,7 +27,8 @@ export default function CookingProgress({
   completedSteps,
   onStepComplete, 
   onStepSelect,
-  onReset
+  onReset,
+  dishName
 }: CookingProgressProps) {
   const [expandedStep, setExpandedStep] = useState<number | null>(null)
 
