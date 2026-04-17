@@ -113,22 +113,24 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     if (hasRunningTimers) {
       interval = setInterval(() => {
         setTimers(prev => {
-          const updated = { ...prev }
           let hasFinished = false
           let finishedDish = ''
 
-          Object.keys(updated).forEach(dishName => {
-            const timer = updated[dishName]
+          const updated = Object.keys(prev).reduce((acc, dishName) => {
+            const timer = prev[dishName]
             if (timer.isRunning && timer.timeLeft > 0) {
               if (timer.timeLeft <= 1) {
-                updated[dishName] = { ...timer, timeLeft: 0, isRunning: false }
+                acc[dishName] = { ...timer, timeLeft: 0, isRunning: false }
                 hasFinished = true
                 finishedDish = dishName
               } else {
-                updated[dishName] = { ...timer, timeLeft: timer.timeLeft - 1 }
+                acc[dishName] = { ...timer, timeLeft: timer.timeLeft - 1 }
               }
+            } else {
+              acc[dishName] = timer
             }
-          })
+            return acc
+          }, {} as Record<string, TimerState>)
 
           if (hasFinished) {
             // Haptic feedback
