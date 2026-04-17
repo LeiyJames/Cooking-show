@@ -74,17 +74,25 @@ export function useDishProgress(dishName: string, totalSteps: number) {
     setCurrentStep(stepId)
   }
 
-  const handleSwipeLeft = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1)
-    }
-  }
+  const handleSwipeLeft = useCallback(() => {
+    setCurrentStep(prev => {
+      if (prev < totalSteps) {
+        return prev + 1
+      }
+      return prev
+    })
+  }, [totalSteps])
 
-  const handleSwipeRight = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1)
-    }
-  }
+
+  const handleSwipeRight = useCallback(() => {
+    setCurrentStep(prev => {
+      if (prev > 1) {
+        return prev - 1
+      }
+      return prev
+    })
+  }, [])
+
 
   const resetProgress = () => {
     setCompletedSteps([])
