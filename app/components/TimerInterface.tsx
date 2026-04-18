@@ -30,6 +30,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
   const timerState = getTimerState(dishName || '')
   const currentRunningDish = getCurrentRunningDish()
 
+  const minutesId = React.useId()
+  const secondsId = React.useId()
+
   // Debug logging
   console.log('TimerInterface Debug:', {
     dishName,
@@ -138,8 +141,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
         {/* Input Fields */}
         <div className="flex gap-4 justify-center mb-6">
           <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Minutes</label>
+            <label htmlFor={minutesId} className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Minutes</label>
             <input
+              id={minutesId}
               type="number"
               value={validatedMinutes}
               onChange={(e) => updateInputValue('inputMinutes', e.target.value, dishName || '')}
@@ -149,8 +153,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
             />
           </div>
           <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Seconds</label>
+            <label htmlFor={secondsId} className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">Seconds</label>
             <input
+              id={secondsId}
               type="number"
               value={validatedSeconds}
               onChange={(e) => updateInputValue('inputSeconds', e.target.value, dishName || '')}
