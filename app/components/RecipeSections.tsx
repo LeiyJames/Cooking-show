@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -33,6 +33,9 @@ export default function RecipeSections() {
     'Let the dough rise in a warm, draft-free area for best results'
   ])
 
+  const notesRef = useRef(notes)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   // Load saved data from localStorage
   useEffect(() => {
     const savedNotes = localStorage.getItem('cookingNotes')
@@ -40,16 +43,35 @@ export default function RecipeSections() {
     const savedSteps = localStorage.getItem('cookingSteps')
     const savedTips = localStorage.getItem('cookingTips')
 
-    if (savedNotes) setNotes(savedNotes)
+    if (savedNotes) {
+      setNotes(savedNotes)
+      notesRef.current = savedNotes
+    }
     if (savedIngredients) setIngredients(JSON.parse(savedIngredients))
     if (savedSteps) setSteps(JSON.parse(savedSteps))
     if (savedTips) setTips(JSON.parse(savedTips))
+
+    return () => {
+      // Flush to localStorage synchronously on unmount to prevent data loss
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      localStorage.setItem('cookingNotes', notesRef.current)
+    }
   }, [])
 
-  // Save notes to localStorage
+  // Save notes to localStorage with debounce
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem('cookingNotes', value)
+    notesRef.current = value
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      localStorage.setItem('cookingNotes', value)
+    }, 500)
   }
 
   const toggleSection = (sectionId: string) => {

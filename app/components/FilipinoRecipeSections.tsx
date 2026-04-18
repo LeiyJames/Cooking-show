@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -38,6 +38,9 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
   const [steps, setSteps] = useState(dish.steps)
   const [tips, setTips] = useState(dish.tips)
 
+  const notesRef = useRef(notes)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   // Load saved data from localStorage
   useEffect(() => {
     const savedNotes = localStorage.getItem(`cookingNotes_${dish.title}`)
@@ -45,16 +48,35 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
     const savedSteps = localStorage.getItem(`cookingSteps_${dish.title}`)
     const savedTips = localStorage.getItem(`cookingTips_${dish.title}`)
 
-    if (savedNotes) setNotes(savedNotes)
+    if (savedNotes) {
+      setNotes(savedNotes)
+      notesRef.current = savedNotes
+    }
     if (savedIngredients) setIngredients(JSON.parse(savedIngredients))
     if (savedSteps) setSteps(JSON.parse(savedSteps))
     if (savedTips) setTips(JSON.parse(savedTips))
+
+    return () => {
+      // Flush to localStorage synchronously on unmount or dish.title change to prevent data loss
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+      localStorage.setItem(`cookingNotes_${dish.title}`, notesRef.current)
+    }
   }, [dish.title])
 
-  // Save notes to localStorage
+  // Save notes to localStorage with debounce
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    notesRef.current = value
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    }, 500)
   }
 
   const toggleSection = (sectionId: string) => {
