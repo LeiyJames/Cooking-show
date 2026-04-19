@@ -130,6 +130,7 @@ export default function RecipeSections() {
           value={notes}
           onChange={(e) => handleNotesChange(e.target.value)}
           placeholder="Add your cooking notes here..."
+          aria-label="Cooking notes"
           className="w-full h-32 p-3 border-2 border-gray-200 rounded-xl focus:border-cooking-500 focus:outline-none resize-none"
         />
       )

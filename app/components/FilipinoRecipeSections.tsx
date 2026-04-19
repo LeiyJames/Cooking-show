@@ -144,6 +144,7 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
           value={notes}
           onChange={(e) => handleNotesChange(e.target.value)}
           placeholder="Add your cooking notes here..."
+          aria-label="Cooking notes"
           className="w-full h-32 p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-cooking-500 dark:focus:border-cooking-400 focus:outline-none resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
         />
       )
