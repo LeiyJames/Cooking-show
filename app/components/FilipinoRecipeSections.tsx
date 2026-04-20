@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -51,10 +51,37 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
     if (savedTips) setTips(JSON.parse(savedTips))
   }, [dish.title])
 
-  // Save notes to localStorage
+  // Save notes to localStorage with debouncing
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
+  const latestNotesRef = useRef(notes)
+
+  useEffect(() => {
+    latestNotesRef.current = notes
+  }, [notes])
+
+  const saveNotes = useCallback((value: string, title: string) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      localStorage.setItem(`cookingNotes_${title}`, value)
+    }, 500)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      // Synchronously flush the latest notes to localStorage on unmount to prevent data loss
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        localStorage.setItem(`cookingNotes_${dish.title}`, latestNotesRef.current)
+        saveTimeoutRef.current = undefined
+      }
+    }
+  }, [dish.title])
+
   const handleNotesChange = (value: string) => {
     setNotes(value)
-    localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    saveNotes(value, dish.title)
   }
 
   const toggleSection = (sectionId: string) => {
