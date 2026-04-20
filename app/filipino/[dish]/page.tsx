@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import Header from '../../components/Header'
-import TimerInterface from '../../components/TimerInterface'
-import FilipinoRecipeSections from '../../components/FilipinoRecipeSections'
-import NutritionInfo from '../../components/NutritionInfo'
-import IngredientCalculator from '../../components/IngredientCalculator'
-import CookingProgress from '../../components/CookingProgress'
-import TouchGestures from '../../components/TouchGestures'
-import { motion } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
-import { filipinoDishes } from '../../data/dishes'
-import { useDishProgress } from '../../hooks/useDishProgress'
+import React, { useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Header from "../../components/Header";
+import TimerInterface from "../../components/TimerInterface";
+import FilipinoRecipeSections from "../../components/FilipinoRecipeSections";
+import NutritionInfo from "../../components/NutritionInfo";
+import IngredientCalculator from "../../components/IngredientCalculator";
+import CookingProgress from "../../components/CookingProgress";
+import TouchGestures from "../../components/TouchGestures";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { filipinoDishes } from "../../data/dishes";
+import { useDishProgress } from "../../hooks/useDishProgress";
 
 export default function FilipinoDishPage() {
-  const params = useParams()
-  const router = useRouter()
-  const dishName = params.dish as string
-  const dish = filipinoDishes[dishName]
-  
+  const params = useParams();
+  const router = useRouter();
+  const dishName = params.dish as string;
+  const dish = filipinoDishes[dishName];
+
   const {
     completedSteps,
     currentStep,
@@ -27,18 +27,58 @@ export default function FilipinoDishPage() {
     handleStepSelect,
     handleSwipeLeft,
     handleSwipeRight,
-    resetProgress
-  } = useDishProgress(dishName, dish ? dish.steps.length : 0)
+    resetProgress,
+  } = useDishProgress(dishName, dish ? dish.steps.length : 0);
 
   const handleBack = () => {
-    router.back()
-  }
+    router.back();
+  };
+
+  const cookingSteps = useMemo(() => {
+    if (!dish) return [];
+    return dish.steps.map((step, index) => {
+      // Parse estimated time from step description
+      // Look for patterns like "(5 minutes)", "(2-3 minutes)", "set timer for 10 minutes"
+      const timeMatch = step.match(/(\d+)(?:-(\d+))?\s*minutes?/i);
+      let estimatedTime = 5; // Default
+
+      if (timeMatch) {
+        if (timeMatch[2]) {
+          // It's a range (e.g. 2-3), take the upper bound
+          estimatedTime = parseInt(timeMatch[2]);
+        } else {
+          // Single number
+          estimatedTime = parseInt(timeMatch[1]);
+        }
+      }
+
+      return {
+        id: index + 1,
+        description: step,
+        estimatedTime,
+      };
+    });
+  }, [dish]);
+
+  const completedStepsSet = useMemo(
+    () => new Set(completedSteps),
+    [completedSteps],
+  );
+
+  const memoizedCookingSteps = useMemo(() => {
+    return cookingSteps.map((step) => ({
+      ...step,
+      isCompleted: completedStepsSet.has(step.id),
+    }));
+  }, [cookingSteps, completedStepsSet]);
 
   if (!dish) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cooking-50 to-warm-50 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 transition-colors duration-300">Dish not found</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 transition-colors duration-300">
+            Dish not found
+          </h1>
           <button
             onClick={handleBack}
             className="text-cooking-600 dark:text-cooking-400 hover:underline transition-colors duration-300"
@@ -47,32 +87,8 @@ export default function FilipinoDishPage() {
           </button>
         </div>
       </div>
-    )
+    );
   }
-
-  const cookingSteps = dish.steps.map((step, index) => {
-    // Parse estimated time from step description
-    // Look for patterns like "(5 minutes)", "(2-3 minutes)", "set timer for 10 minutes"
-    const timeMatch = step.match(/(\d+)(?:-(\d+))?\s*minutes?/i)
-    let estimatedTime = 5 // Default
-
-    if (timeMatch) {
-      if (timeMatch[2]) {
-        // It's a range (e.g. 2-3), take the upper bound
-        estimatedTime = parseInt(timeMatch[2])
-      } else {
-        // Single number
-        estimatedTime = parseInt(timeMatch[1])
-      }
-    }
-
-    return {
-      id: index + 1,
-      description: step,
-      estimatedTime,
-      isCompleted: completedSteps.includes(index + 1)
-    }
-  })
 
   return (
     <main className="min-h-screen landscape-compact">
@@ -101,8 +117,12 @@ export default function FilipinoDishPage() {
           className="text-center mb-8"
         >
           <div className="text-8xl mb-4">{dish.emoji}</div>
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2 transition-colors duration-300">{dish.title}</h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors duration-300">{dish.description}</p>
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2 transition-colors duration-300">
+            {dish.title}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-lg transition-colors duration-300">
+            {dish.description}
+          </p>
         </motion.div>
 
         {/* Main Content Grid */}
@@ -110,7 +130,10 @@ export default function FilipinoDishPage() {
           {/* Left Column */}
           <div className="space-y-6">
             {/* Timer Interface */}
-            <TouchGestures onSwipeLeft={handleSwipeLeft} onSwipeRight={handleSwipeRight}>
+            <TouchGestures
+              onSwipeLeft={handleSwipeLeft}
+              onSwipeRight={handleSwipeRight}
+            >
               <TimerInterface
                 recommendedMinutes={dish.recommendedMinutes}
                 dishName={dish.title}
@@ -119,7 +142,7 @@ export default function FilipinoDishPage() {
 
             {/* Cooking Progress */}
             <CookingProgress
-              steps={cookingSteps}
+              steps={memoizedCookingSteps}
               currentStep={currentStep}
               completedSteps={completedSteps}
               onStepComplete={handleStepComplete}
@@ -149,5 +172,5 @@ export default function FilipinoDishPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

@@ -4,3 +4,6 @@
 ## 2024-05-24 - Avoid syncing derivable data in state via useEffect
 **Learning:** In React components like `IngredientCalculator`, syncing derived values (like `scaledIngredients`) into state via `useEffect` causes unnecessary double re-renders whenever the dependency (`servings`) changes.
 **Action:** Always derive values directly during render or use `useMemo` for complex calculations instead of copying them into state using `useEffect`.
+## 2024-05-24 - Array includes inside loops and renders
+**Learning:** Using `Array.includes()` inside loops or maps during render results in O(n^2) or O(n * m) complexity, negatively impacting performance, especially for frequent renders.
+**Action:** Convert arrays to Sets using `useMemo` for repeated lookups to reduce lookup complexity to O(1).
