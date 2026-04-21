@@ -1,8 +1,15 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
+
+const formatAmount = (amount: number) => {
+  if (amount === Math.floor(amount)) {
+    return amount.toString()
+  }
+  return amount.toFixed(2).replace(/\.?0+$/, '')
+}
 
 interface Ingredient {
   name: string
@@ -38,6 +45,14 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
   const [steps, setSteps] = useState(dish.steps)
   const [tips, setTips] = useState(dish.tips)
 
+  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const latestNotesRef = useRef(notes)
+
+  // Keep ref in sync with state for cleanup
+  useEffect(() => {
+    latestNotesRef.current = notes
+  }, [notes])
+
   // Load saved data from localStorage
   useEffect(() => {
     const savedNotes = localStorage.getItem(`cookingNotes_${dish.title}`)
@@ -51,21 +66,31 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
     if (savedTips) setTips(JSON.parse(savedTips))
   }, [dish.title])
 
-  // Save notes to localStorage
-  const handleNotesChange = (value: string) => {
+  // Save notes to localStorage with debounce
+  const handleNotesChange = useCallback((value: string) => {
     setNotes(value)
-    localStorage.setItem(`cookingNotes_${dish.title}`, value)
-  }
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      localStorage.setItem(`cookingNotes_${dish.title}`, value)
+    }, 500)
+  }, [dish.title])
+
+  // Cleanup timeout and flush pending writes on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+        localStorage.setItem(`cookingNotes_${dish.title}`, latestNotesRef.current)
+      }
+    }
+  }, [dish.title])
 
   const toggleSection = (sectionId: string) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId)
-  }
-
-  const formatAmount = (amount: number) => {
-    if (amount === Math.floor(amount)) {
-      return amount.toString()
-    }
-    return amount.toFixed(2).replace(/\.?0+$/, '')
   }
 
   const sections: Section[] = [
