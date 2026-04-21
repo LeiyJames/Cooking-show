@@ -7,3 +7,6 @@
 ## 2024-05-24 - Array includes inside loops and renders
 **Learning:** Using `Array.includes()` inside loops or maps during render results in O(n^2) or O(n * m) complexity, negatively impacting performance, especially for frequent renders.
 **Action:** Convert arrays to Sets using `useMemo` for repeated lookups to reduce lookup complexity to O(1).
+## 2024-05-24 - Debouncing React Controlled Textareas
+**Learning:** Synchronous `localStorage.setItem` calls inside React controlled input `onChange` handlers (like textareas for notes) block the main thread and impact typing performance.
+**Action:** Always debounce `localStorage` writes for continuous text inputs using `useRef` and `setTimeout`, and ensure data isn't lost during fast navigation by synchronously flushing the latest tracking ref in the component unmount cleanup `useEffect`.
