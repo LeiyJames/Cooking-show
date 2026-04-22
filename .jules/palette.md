@@ -4,3 +4,6 @@
 ## 2024-05-15 - Polyfilling Custom Interactive Accordion Headers
 **Learning:** Interactive accordion headers built with custom `<div>` tags instead of native `<button>` tags frequently break keyboard accessibility. They omit focusability, screen reader semantics, and lack Space/Enter interaction defaults.
 **Action:** When identifying custom interactive `<div>` elements, always polyfill them explicitly with `role="button"`, `tabIndex={0}`, a keyboard handler like `onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleAction() } }}`, and aria attributes like `aria-expanded` and `aria-controls`.
+## 2026-04-22 - Timer Form Accessibility
+**Learning:** Timer input fields for minutes/seconds lack proper label associations, preventing screen readers from announcing them correctly, and grouped controls (presets, playback) are not grouped semantically.
+**Action:** Use React.useId() to link <label htmlFor> to <input id>, add cursor-pointer to labels for better mouse UX, and wrap related button clusters in role="group" with aria-label.
