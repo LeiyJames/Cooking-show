@@ -1,12 +1,28 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Beer, X } from 'lucide-react'
 
 export default function Footer() {
   const [showQR, setShowQR] = useState(false)
   const [imageError, setImageError] = useState(false)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showQR) {
+        setShowQR(false)
+      }
+    }
+
+    if (showQR) {
+      window.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [showQR])
 
   return (
     <>
@@ -62,6 +78,8 @@ export default function Footer() {
                 <button
                   onClick={() => setShowQR(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200"
+                  aria-label="Close QR Code modal"
+                  title="Close"
                 >
                   <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>

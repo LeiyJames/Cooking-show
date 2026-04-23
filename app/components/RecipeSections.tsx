@@ -179,6 +179,8 @@ export default function RecipeSections() {
           <button
             onClick={() => toggleSection(section.id)}
             className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors"
+            aria-expanded={expandedSection === section.id}
+            aria-controls={`section-content-${section.id}`}
           >
             <div className="flex items-center gap-3">
               <span className="text-cooking-600">{section.icon}</span>
@@ -199,6 +201,7 @@ export default function RecipeSections() {
           <AnimatePresence>
             {expandedSection === section.id && (
               <motion.div
+                id={`section-content-${section.id}`}
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
