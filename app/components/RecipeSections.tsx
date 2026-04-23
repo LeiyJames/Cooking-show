@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -81,6 +81,56 @@ export default function RecipeSections() {
     setExpandedSection(expandedSection === sectionId ? null : sectionId)
   }
 
+  // ⚡ Bolt Performance Optimization:
+  // We wrap the generation of these complex framer-motion list items in useMemo.
+  // This prevents the expensive recalculation of these JSX elements on every keystroke
+  // when the user types in the "notes" textarea below, reducing re-render time.
+  const memoizedIngredients = useMemo(() => {
+    return ingredients.map((ingredient, index) => (
+      <motion.li
+        key={index}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.1 }}
+        className="flex items-start gap-2"
+      >
+        <span className="text-cooking-500 mt-1">•</span>
+        <span className="text-gray-700">{ingredient}</span>
+      </motion.li>
+    ))
+  }, [ingredients])
+
+  const memoizedSteps = useMemo(() => {
+    return steps.map((step, index) => (
+      <motion.li
+        key={index}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.1 }}
+        className="flex items-start gap-3"
+      >
+        <span className="flex-shrink-0 w-6 h-6 bg-cooking-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+          {index + 1}
+        </span>
+        <span className="text-gray-700">{step}</span>
+      </motion.li>
+    ))
+  }, [steps])
+
+  const memoizedTips = useMemo(() => {
+    return tips.map((tip, index) => (
+      <motion.div
+        key={index}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.1 }}
+        className="bg-cooking-50 border-l-4 border-cooking-500 p-4 rounded-r-lg"
+      >
+        <p className="text-gray-700">{tip}</p>
+      </motion.div>
+    ))
+  }, [tips])
+
   const sections: Section[] = [
     {
       id: 'ingredients',
@@ -88,18 +138,7 @@ export default function RecipeSections() {
       icon: <Utensils className="w-5 h-5" />,
       content: (
         <ul className="space-y-2">
-          {ingredients.map((ingredient, index) => (
-            <motion.li
-              key={index}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-2"
-            >
-              <span className="text-cooking-500 mt-1">•</span>
-              <span className="text-gray-700">{ingredient}</span>
-            </motion.li>
-          ))}
+          {memoizedIngredients}
         </ul>
       )
     },
@@ -109,20 +148,7 @@ export default function RecipeSections() {
       icon: <List className="w-5 h-5" />,
       content: (
         <ol className="space-y-4">
-          {steps.map((step, index) => (
-            <motion.li
-              key={index}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-3"
-            >
-              <span className="flex-shrink-0 w-6 h-6 bg-cooking-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                {index + 1}
-              </span>
-              <span className="text-gray-700">{step}</span>
-            </motion.li>
-          ))}
+          {memoizedSteps}
         </ol>
       )
     },
@@ -132,17 +158,7 @@ export default function RecipeSections() {
       icon: <Lightbulb className="w-5 h-5" />,
       content: (
         <div className="space-y-3">
-          {tips.map((tip, index) => (
-            <motion.div
-              key={index}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-cooking-50 border-l-4 border-cooking-500 p-4 rounded-r-lg"
-            >
-              <p className="text-gray-700">{tip}</p>
-            </motion.div>
-          ))}
+          {memoizedTips}
         </div>
       )
     },
