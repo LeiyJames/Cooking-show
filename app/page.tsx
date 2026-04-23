@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ChefHat, Utensils } from 'lucide-react'
@@ -13,15 +14,20 @@ export default function HeroPage() {
   }
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{
-        backgroundImage: 'url(/cook.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/*
+        Optimization: Use Next.js Image component with priority for better LCP.
+        This replaces the previous CSS background-image approach which delayed image discovery.
+      */}
+      <Image
+        src="/cook.png"
+        alt="Filipino Cooking Background"
+        fill
+        className="object-cover object-center"
+        priority
+        quality={90}
+      />
+
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40"></div>
       
