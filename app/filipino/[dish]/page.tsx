@@ -60,17 +60,13 @@ export default function FilipinoDishPage() {
     });
   }, [dish]);
 
-  const completedStepsSet = useMemo(
-    () => new Set(completedSteps),
-    [completedSteps],
-  );
-
+  // ⚡ Bolt Performance: removed redundant O(n) completedStepsSet creation, now directly using the Set state
   const memoizedCookingSteps = useMemo(() => {
     return cookingSteps.map((step) => ({
       ...step,
-      isCompleted: completedStepsSet.has(step.id),
+      isCompleted: completedSteps.has(step.id),
     }));
-  }, [cookingSteps, completedStepsSet]);
+  }, [cookingSteps, completedSteps]);
 
   if (!dish) {
     return (
