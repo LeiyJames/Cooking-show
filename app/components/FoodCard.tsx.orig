@@ -16,11 +16,11 @@ interface FoodCardProps {
   rating?: number
 }
 
-export default function FoodCard({ 
-  title, 
-  description, 
-  image, 
-  href, 
+export default function FoodCard({
+  title,
+  description,
+  image,
+  href,
   cookingTime = 30,
   difficulty = 'Medium',
   servings = 4,
@@ -42,10 +42,10 @@ export default function FoodCard({
       <Star
         key={i}
         className={`w-4 h-4 ${
-          i < Math.floor(rating) 
-            ? 'text-yellow-500 fill-current' 
-            : i < rating 
-              ? 'text-yellow-500 fill-current opacity-50' 
+          i < Math.floor(rating)
+            ? 'text-yellow-500 fill-current'
+            : i < rating
+              ? 'text-yellow-500 fill-current opacity-50'
               : 'text-gray-300 dark:text-gray-600'
         }`}
       />
@@ -53,11 +53,11 @@ export default function FoodCard({
   }
 
   return (
-    <Link href={href} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-cooking-500 rounded-2xl">
+    <Link href={href} aria-label={`View recipe for ${title}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-cooking-500 rounded-2xl">
       <motion.div
         className="card cursor-pointer group relative overflow-hidden transition-all duration-300"
-        whileHover={{ 
-          y: -8, 
+        whileHover={{
+          y: -8,
           scale: 1.02,
           boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
         }}
@@ -78,7 +78,7 @@ export default function FoodCard({
         {/* Main Content */}
         <div className="relative z-10">
           {/* Image Section */}
-          <motion.div 
+          <motion.div
             className="text-center mb-4"
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -92,7 +92,7 @@ export default function FoodCard({
           </motion.div>
 
           {/* Title */}
-          <motion.h3 
+          <motion.h3
             className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-cooking-600 dark:group-hover:text-cooking-400 transition-colors duration-300"
             animate={{
               y: isHovered ? -2 : 0
@@ -138,7 +138,7 @@ export default function FoodCard({
           </div>
 
           {/* Action Button */}
-          <motion.div 
+          <motion.div
             className="flex items-center justify-center gap-2 text-cooking-500 dark:text-cooking-400 font-medium transition-colors duration-300"
             animate={{
               x: isHovered ? 4 : 0
@@ -167,4 +167,4 @@ export default function FoodCard({
       </motion.div>
     </Link>
   )
-} 
+}
