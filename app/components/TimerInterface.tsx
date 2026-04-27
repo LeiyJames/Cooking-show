@@ -50,6 +50,9 @@ export default function TimerInterface({ recommendedMinutes, dishName }: TimerIn
   const validatedMinutes = isNaN(parseInt(displayMinutes)) ? '0' : displayMinutes
   const validatedSeconds = isNaN(parseInt(displaySeconds)) ? '0' : displaySeconds
 
+  const minutesId = React.useId()
+  const secondsId = React.useId()
+
   const handleStartTimer = () => {
     const minutes = parseInt(validatedMinutes) || 0
     const seconds = parseInt(validatedSeconds) || 0

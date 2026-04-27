@@ -10,3 +10,6 @@
 ## 2024-05-24 - Debouncing React Controlled Textareas
 **Learning:** Synchronous `localStorage.setItem` calls inside React controlled input `onChange` handlers (like textareas for notes) block the main thread and impact typing performance.
 **Action:** Always debounce `localStorage` writes for continuous text inputs using `useRef` and `setTimeout`, and ensure data isn't lost during fast navigation by synchronously flushing the latest tracking ref in the component unmount cleanup `useEffect`.
+## 2026-04-26 - Memoize heavy JSX arrays in RecipeSections
+**Learning:** Inline mapped JSX arrays (especially those wrapping items in framer-motion components) inside components with high-frequency state updates (like continuous textarea inputs) cause redundant recalculation and memory allocation.
+**Action:** Extract and wrap pure mapped arrays or complex objects containing JSX elements in `useMemo` dependent solely on their source data to prevent them from recalculating on unrelated render cycles.
