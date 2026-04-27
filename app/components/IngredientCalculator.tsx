@@ -92,6 +92,8 @@ export default function IngredientCalculator({ ingredients, originalServings, di
     }
   }, [])
 
+  const servingsLabelId = React.useId()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -117,13 +119,13 @@ export default function IngredientCalculator({ ingredients, originalServings, di
       <div className="bg-gradient-to-r from-cooking-50 to-warm-50 dark:from-cooking-900/20 dark:to-warm-900/20 rounded-xl p-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="text-center">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+            <label id={servingsLabelId} className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block cursor-pointer">
               Servings
             </label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3" role="group" aria-labelledby={servingsLabelId}>
               <motion.button
                 onClick={() => adjustServings(-1)}
-                className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="p-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={servings <= 1}
@@ -133,7 +135,7 @@ export default function IngredientCalculator({ ingredients, originalServings, di
                 <Minus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               </motion.button>
               
-              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center">
+              <span className="text-2xl font-bold text-gray-800 dark:text-gray-200 min-w-[3rem] text-center" aria-live="polite" aria-atomic="true">
                 {servings}
               </span>
               
