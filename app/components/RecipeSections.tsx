@@ -81,76 +81,86 @@ export default function RecipeSections() {
     setExpandedSection(expandedSection === sectionId ? null : sectionId)
   }
 
-  const ingredientsList = useMemo(() => (
-    <ul className="space-y-2">
-      {ingredients.map((ingredient, index) => (
-        <motion.li
-          key={index}
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: index * 0.1 }}
-          className="flex items-start gap-2"
-        >
-          <span className="text-cooking-500 mt-1">•</span>
-          <span className="text-gray-700">{ingredient}</span>
-        </motion.li>
-      ))}
-    </ul>
-  ), [ingredients])
+  // ⚡ Bolt Performance Optimization:
+  // We wrap the generation of these complex framer-motion list items in useMemo.
+  // This prevents the expensive recalculation of these JSX elements on every keystroke
+  // when the user types in the "notes" textarea below, reducing re-render time.
+  const memoizedIngredients = useMemo(() => {
+    return ingredients.map((ingredient, index) => (
+      <motion.li
+        key={index}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.1 }}
+        className="flex items-start gap-2"
+      >
+        <span className="text-cooking-500 mt-1">•</span>
+        <span className="text-gray-700">{ingredient}</span>
+      </motion.li>
+    ))
+  }, [ingredients])
 
-  const stepsList = useMemo(() => (
-    <ol className="space-y-4">
-      {steps.map((step, index) => (
-        <motion.li
-          key={index}
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: index * 0.1 }}
-          className="flex items-start gap-3"
-        >
-          <span className="flex-shrink-0 w-6 h-6 bg-cooking-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-            {index + 1}
-          </span>
-          <span className="text-gray-700">{step}</span>
-        </motion.li>
-      ))}
-    </ol>
-  ), [steps])
+  const memoizedSteps = useMemo(() => {
+    return steps.map((step, index) => (
+      <motion.li
+        key={index}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.1 }}
+        className="flex items-start gap-3"
+      >
+        <span className="flex-shrink-0 w-6 h-6 bg-cooking-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
+          {index + 1}
+        </span>
+        <span className="text-gray-700">{step}</span>
+      </motion.li>
+    ))
+  }, [steps])
 
-  const tipsList = useMemo(() => (
-    <div className="space-y-3">
-      {tips.map((tip, index) => (
-        <motion.div
-          key={index}
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: index * 0.1 }}
-          className="bg-cooking-50 border-l-4 border-cooking-500 p-4 rounded-r-lg"
-        >
-          <p className="text-gray-700">{tip}</p>
-        </motion.div>
-      ))}
-    </div>
-  ), [tips])
+  const memoizedTips = useMemo(() => {
+    return tips.map((tip, index) => (
+      <motion.div
+        key={index}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: index * 0.1 }}
+        className="bg-cooking-50 border-l-4 border-cooking-500 p-4 rounded-r-lg"
+      >
+        <p className="text-gray-700">{tip}</p>
+      </motion.div>
+    ))
+  }, [tips])
 
   const sections: Section[] = [
     {
       id: 'ingredients',
       title: 'Ingredients',
       icon: <Utensils className="w-5 h-5" />,
-      content: ingredientsList
+      content: (
+        <ul className="space-y-2">
+          {memoizedIngredients}
+        </ul>
+      )
     },
     {
       id: 'steps',
       title: 'Steps',
       icon: <List className="w-5 h-5" />,
-      content: stepsList
+      content: (
+        <ol className="space-y-4">
+          {memoizedSteps}
+        </ol>
+      )
     },
     {
       id: 'tips',
       title: 'Tips',
       icon: <Lightbulb className="w-5 h-5" />,
-      content: tipsList
+      content: (
+        <div className="space-y-3">
+          {memoizedTips}
+        </div>
+      )
     },
     {
       id: 'notes',
