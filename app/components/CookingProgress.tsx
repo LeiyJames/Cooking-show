@@ -14,7 +14,8 @@ interface CookingStep {
 interface CookingProgressProps {
   steps: CookingStep[];
   currentStep: number;
-  completedSteps: number[];
+  // ⚡ Bolt Performance: Expects a Set directly to avoid deriving it on every render
+  completedSteps: Set<number>;
   onStepComplete: (stepId: number) => void;
   onStepSelect: (stepId: number) => void;
   onReset?: () => void;
@@ -31,16 +32,11 @@ export default function CookingProgress({
 }: CookingProgressProps) {
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
 
-  const completedStepsSet = useMemo(
-    () => new Set(completedSteps),
-    [completedSteps],
-  );
-
-  const completedStepsCount = completedSteps.length;
+  const completedStepsCount = completedSteps.size;
   const progressPercentage = (completedStepsCount / steps.length) * 100;
 
   const getStepIcon = (step: CookingStep) => {
-    if (completedStepsSet.has(step.id)) {
+    if (completedSteps.has(step.id)) {
       return <CheckCircle className="w-5 h-5 text-green-500" />;
     }
     if (step.id === currentStep) {
@@ -50,7 +46,7 @@ export default function CookingProgress({
   };
 
   const getStepStatus = (step: CookingStep) => {
-    if (completedStepsSet.has(step.id)) return "completed";
+    if (completedSteps.has(step.id)) return "completed";
     if (step.id === currentStep) return "current";
     return "pending";
   };
@@ -182,7 +178,7 @@ export default function CookingProgress({
                     className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600"
                   >
                     <div className="flex gap-2">
-                      {!completedStepsSet.has(step.id) && (
+                      {!completedSteps.has(step.id) && (
                         <motion.button
                           onClick={() => onStepComplete(step.id)}
                           className="px-3 py-1 bg-cooking-500 hover:bg-cooking-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
@@ -193,7 +189,7 @@ export default function CookingProgress({
                         </motion.button>
                       )}
 
-                      {completedStepsSet.has(step.id) && (
+                      {completedSteps.has(step.id) && (
                         <motion.button
                           onClick={() => onStepSelect(step.id)}
                           className="px-3 py-1 bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
