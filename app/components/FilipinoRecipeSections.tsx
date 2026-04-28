@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, ChevronUp, Utensils, List, Lightbulb, FileText } from 'lucide-react'
 
@@ -93,72 +93,78 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
     setExpandedSection(expandedSection === sectionId ? null : sectionId)
   }
 
+  const ingredientsList = useMemo(() => (
+    <ul className="space-y-2">
+      {ingredients.map((ingredient, index) => (
+        <motion.li
+          key={index}
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: index * 0.1 }}
+          className="flex items-start gap-2"
+        >
+          <span className="text-cooking-500 dark:text-cooking-400 mt-1 transition-colors duration-300">•</span>
+          <span className="text-gray-700 dark:text-gray-200 transition-colors duration-300">
+            {formatAmount(ingredient.amount)} {ingredient.unit} {ingredient.name}
+          </span>
+        </motion.li>
+      ))}
+    </ul>
+  ), [ingredients])
+
+  const stepsList = useMemo(() => (
+    <ol className="space-y-4">
+      {steps.map((step, index) => (
+        <motion.li
+          key={index}
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: index * 0.1 }}
+          className="flex items-start gap-3"
+        >
+          <span className="flex-shrink-0 w-6 h-6 bg-cooking-500 dark:bg-cooking-400 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300">
+            {index + 1}
+          </span>
+          <span className="text-gray-700 dark:text-gray-200 transition-colors duration-300">{step}</span>
+        </motion.li>
+      ))}
+    </ol>
+  ), [steps])
+
+  const tipsList = useMemo(() => (
+    <div className="space-y-3">
+      {tips.map((tip, index) => (
+        <motion.div
+          key={index}
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: index * 0.1 }}
+          className="bg-cooking-50 dark:bg-cooking-900/20 border-l-4 border-cooking-500 dark:border-cooking-400 p-4 rounded-r-lg transition-colors duration-300"
+        >
+          <p className="text-gray-700 dark:text-gray-200 transition-colors duration-300">{tip}</p>
+        </motion.div>
+      ))}
+    </div>
+  ), [tips])
+
   const sections: Section[] = [
     {
       id: 'ingredients',
       title: 'Ingredients',
       icon: <Utensils className="w-5 h-5" />,
-      content: (
-        <ul className="space-y-2">
-          {ingredients.map((ingredient, index) => (
-            <motion.li
-              key={index}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-2"
-            >
-              <span className="text-cooking-500 dark:text-cooking-400 mt-1 transition-colors duration-300">•</span>
-              <span className="text-gray-700 dark:text-gray-200 transition-colors duration-300">
-                {formatAmount(ingredient.amount)} {ingredient.unit} {ingredient.name}
-              </span>
-            </motion.li>
-          ))}
-        </ul>
-      )
+      content: ingredientsList
     },
     {
       id: 'steps',
       title: 'Steps',
       icon: <List className="w-5 h-5" />,
-      content: (
-        <ol className="space-y-4">
-          {steps.map((step, index) => (
-            <motion.li
-              key={index}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-3"
-            >
-              <span className="flex-shrink-0 w-6 h-6 bg-cooking-500 dark:bg-cooking-400 text-white rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300">
-                {index + 1}
-              </span>
-              <span className="text-gray-700 dark:text-gray-200 transition-colors duration-300">{step}</span>
-            </motion.li>
-          ))}
-        </ol>
-      )
+      content: stepsList
     },
     {
       id: 'tips',
       title: 'Tips',
       icon: <Lightbulb className="w-5 h-5" />,
-      content: (
-        <div className="space-y-3">
-          {tips.map((tip, index) => (
-            <motion.div
-              key={index}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-cooking-50 dark:bg-cooking-900/20 border-l-4 border-cooking-500 dark:border-cooking-400 p-4 rounded-r-lg transition-colors duration-300"
-            >
-              <p className="text-gray-700 dark:text-gray-200 transition-colors duration-300">{tip}</p>
-            </motion.div>
-          ))}
-        </div>
-      )
+      content: tipsList
     },
     {
       id: 'notes',
@@ -192,6 +198,8 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
         >
           <button
             onClick={() => toggleSection(section.id)}
+            aria-expanded={expandedSection === section.id}
+            aria-controls={`section-content-${section.id}`}
             className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300"
           >
             <div className="flex items-center gap-3">
@@ -213,6 +221,7 @@ export default function FilipinoRecipeSections({ dish }: FilipinoRecipeSectionsP
           <AnimatePresence>
             {expandedSection === section.id && (
               <motion.div
+                id={`section-content-${section.id}`}
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
