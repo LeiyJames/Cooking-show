@@ -9,7 +9,8 @@ interface DishProgressState {
 }
 
 export function useDishProgress(dishName: string, totalSteps: number) {
-  const [completedSteps, setCompletedSteps] = useState<number[]>([])
+  // ⚡ Bolt Performance: Store completedSteps directly as a Set for O(1) membership checks without repeated conversion
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
   const [currentStep, setCurrentStep] = useState(1)
   const [isInitialized, setIsInitialized] = useState(false)
 
@@ -22,7 +23,7 @@ export function useDishProgress(dishName: string, totalSteps: number) {
     if (savedProgress) {
       try {
         const state = JSON.parse(savedProgress) as DishProgressState
-        setCompletedSteps(state.completedSteps || [])
+        setCompletedSteps(new Set(state.completedSteps || []))
         setCurrentStep(state.currentStep || 1)
       } catch (error) {
         console.error('Error loading progress state:', error)
@@ -39,7 +40,7 @@ export function useDishProgress(dishName: string, totalSteps: number) {
     }
     saveTimeoutRef.current = setTimeout(() => {
       const progressState: DishProgressState = {
-        completedSteps,
+        completedSteps: Array.from(completedSteps),
         currentStep,
         timestamp: Date.now()
       }
@@ -64,8 +65,10 @@ export function useDishProgress(dishName: string, totalSteps: number) {
 
   const handleStepComplete = (stepId: number) => {
     setCompletedSteps(prev => {
-      if (prev.includes(stepId)) return prev
-      return [...prev, stepId]
+      if (prev.has(stepId)) return prev
+      const next = new Set(prev)
+      next.add(stepId)
+      return next
     })
     setCurrentStep(prev => Math.min(prev + 1, totalSteps))
   }
@@ -87,7 +90,7 @@ export function useDishProgress(dishName: string, totalSteps: number) {
   }
 
   const resetProgress = () => {
-    setCompletedSteps([])
+    setCompletedSteps(new Set())
     setCurrentStep(1)
     localStorage.removeItem(progressKey)
   }
